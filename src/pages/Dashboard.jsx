@@ -1,15 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { seedDatabase } from '../services/seedService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
     <main className="pt-20 px-6 max-w-2xl mx-auto space-y-10">
-      <section className="relative pt-4">
+      <section className="relative pt-4 text-center md:text-left">
         <div className="flex flex-col">
           <span className="font-label text-sm uppercase tracking-widest text-secondary font-semibold">Chào buổi sáng, Nam</span>
           <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface mt-1">Sẵn sàng ra sân chưa?</h2>
+          {/* Temporary Seed Button */}
+          <button 
+            onClick={seedDatabase}
+            className="mt-4 text-[10px] font-label font-bold text-primary/40 hover:text-primary transition-colors uppercase tracking-widest self-center md:self-start border border-primary/20 px-3 py-1 rounded-full w-fit"
+          >
+            [ Khởi tạo dữ liệu mẫu Firestore ]
+          </button>
         </div>
         <div className="absolute -top-4 -right-8 opacity-10 pointer-events-none">
           <span className="material-symbols-outlined text-9xl">sports_tennis</span>

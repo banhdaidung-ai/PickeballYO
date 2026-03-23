@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 
 // TODO: Replace with your actual Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDWJo-AfzcHrQ1wfWOQynuXkIQjbnBMU10",
-  authDomain: "pickeball-yody.firebaseapp.com",
-  projectId: "pickeball-yody",
-  storageBucket: "pickeball-yody.firebasestorage.app",
-  messagingSenderId: "1020066153184",
-  appId: "1:1020066153184:web:ffcf3ffd01a99744a48685"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);

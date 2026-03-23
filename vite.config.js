@@ -5,4 +5,18 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/PickeballYO/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('firebase')) {
+            return 'vendor-firebase';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor-libs';
+          }
+        }
+      }
+    }
+  }
 })
