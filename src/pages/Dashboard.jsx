@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { resetAndSeed } from '../services/seedService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -10,6 +11,13 @@ const Dashboard = () => {
         <div className="flex flex-col">
           <span className="font-label text-sm uppercase tracking-widest text-secondary font-semibold">Chào buổi sáng, Nam</span>
           <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface mt-1">Sẵn sàng ra sân chưa?</h2>
+          {/* Temporary Seed Button */}
+          <button 
+            onClick={resetAndSeed}
+            className="mt-4 text-[10px] font-label font-bold text-primary/40 hover:text-primary transition-colors uppercase tracking-widest self-center md:self-start border border-primary/20 px-3 py-1 rounded-full w-fit"
+          >
+            [ Cập nhật Thứ tự & Dữ liệu ]
+          </button>
         </div>
         <div className="absolute -top-4 -right-8 opacity-10 pointer-events-none">
           <span className="material-symbols-outlined text-9xl">sports_tennis</span>

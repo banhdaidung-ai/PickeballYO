@@ -4,6 +4,7 @@ import { db } from "../firebase";
 const COLLECTION_NAME = "schedule";
 const scheduleData = [
   {
+    dayIndex: 0,
     startTime: "17:30",
     dayLabel: "Thứ 2 (T2)",
     courtName: "Sân TDS",
@@ -13,6 +14,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 1,
     startTime: "17:30",
     dayLabel: "Thứ 3 (T3)",
     courtName: "Sân Divo",
@@ -22,6 +24,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 2,
     startTime: "17:30",
     dayLabel: "Thứ 4 (T4)",
     courtName: "Sân TDS",
@@ -31,6 +34,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 3,
     startTime: "17:30",
     dayLabel: "Thứ 5 (T5)",
     courtName: "Sân Divo",
@@ -40,6 +44,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 4,
     startTime: "10:30",
     dayLabel: "Thứ 6 (T6)",
     courtName: "Sân TDS",
@@ -49,6 +54,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 5,
     startTime: "06:00",
     dayLabel: "Thứ 7 (T7)",
     courtName: "Sân Divo",
@@ -58,6 +64,7 @@ const scheduleData = [
     participants: []
   },
   {
+    dayIndex: 6,
     startTime: "06:00",
     dayLabel: "Chủ Nhật (CN)",
     courtName: "Sân Divo",
@@ -97,28 +104,23 @@ export const seedDatabase = async () => {
       if (!exists) {
         await addDoc(collection(db, COLLECTION_NAME), item);
         addedCount++;
-        console.log(`Added session for ${item.dayLabel}`);
       } else {
         skippedCount++;
-        console.log(`Skipped duplicate for ${item.dayLabel}`);
       }
     }
-    
-    alert(`Hoàn tất! Đã thêm ${addedCount} buổi mới, bỏ qua ${skippedCount} buổi trùng lặp.`);
+    return { addedCount, skippedCount };
   } catch (e) {
     console.error("Error adding document: ", e);
-    alert("Lỗi khi thêm dữ liệu: " + e.message);
+    throw e;
   }
 };
 
 export const resetAndSeed = async () => {
-  if (window.confirm("Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu cũ và khởi tạo lại không?")) {
-    try {
-      await clearDatabase();
-      await seedDatabase();
-      alert("Đã xóa và khởi tạo lại dữ liệu thành công!");
-    } catch (e) {
-      alert("Lỗi: " + e.message);
-    }
+  try {
+    await clearDatabase();
+    return await seedDatabase();
+  } catch (e) {
+    console.error("Error resetting and seeding: ", e);
+    throw e;
   }
 };
