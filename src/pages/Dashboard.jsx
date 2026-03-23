@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { seedDatabase } from '../services/seedService';
+import { resetAndSeed } from '../services/seedService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -13,10 +13,10 @@ const Dashboard = () => {
           <h2 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface mt-1">Sẵn sàng ra sân chưa?</h2>
           {/* Temporary Seed Button */}
           <button 
-            onClick={seedDatabase}
+            onClick={resetAndSeed}
             className="mt-4 text-[10px] font-label font-bold text-primary/40 hover:text-primary transition-colors uppercase tracking-widest self-center md:self-start border border-primary/20 px-3 py-1 rounded-full w-fit"
           >
-            [ Khởi tạo dữ liệu mẫu Firestore ]
+            [ Xóa lặp & Khởi tạo lại Firestore ]
           </button>
         </div>
         <div className="absolute -top-4 -right-8 opacity-10 pointer-events-none">
