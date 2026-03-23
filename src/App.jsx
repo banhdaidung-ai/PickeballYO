@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Schedule from './pages/Schedule';
@@ -11,7 +11,7 @@ import Registration from './pages/Registration';
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
@@ -23,7 +23,7 @@ function App() {
         <Route path="/session/:id" element={<SessionDetails />} />
         <Route path="/registration" element={<Registration />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
