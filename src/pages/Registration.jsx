@@ -9,7 +9,7 @@ const Registration = () => {
       <header className="fixed top-0 w-full z-50 bg-orange-50/80 backdrop-blur-md flex justify-between items-center px-6 h-16">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary-fixed text-2xl">sports_tennis</span>
-          <span className="text-xl font-black italic text-orange-600 tracking-tight font-headline">CLB PickeBall YODY</span>
+          <span className="text-xl font-black italic text-orange-600 tracking-tight font-headline">CLB Pickleball YODY</span>
         </div>
         <button 
           onClick={() => navigate(-1)}
@@ -25,7 +25,7 @@ const Registration = () => {
           <h1 className="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-none mb-4 uppercase">
             JOIN THE <span className="text-primary-fixed italic lowercase">MOMENTUM.</span>
           </h1>
-          <p className="text-secondary max-w-md font-medium">Bắt đầu hành trình Pickleball chuyên nghiệp cùng cộng đồng Kinetic.</p>
+          <p className="text-secondary max-w-md font-medium">Bắt đầu hành trình Pickleball chuyên nghiệp cùng cộng đồng YODY.</p>
         </section>
 
         <form className="grid grid-cols-1 lg:grid-cols-12 gap-8" onSubmit={(e) => e.preventDefault()}>
@@ -46,7 +46,7 @@ const Registration = () => {
                   </div>
                   <div className="relative group">
                     <label className="block text-xs font-bold text-on-surface-variant uppercase mb-2 ml-1">Email</label>
-                    <input className="w-full bg-surface-container border-none border-b-2 border-transparent focus:ring-0 focus:border-primary-fixed transition-all px-4 py-3 rounded-lg placeholder:text-outline/50" placeholder="example@kinetic.com" type="email"/>
+                    <input className="w-full bg-surface-container border-none border-b-2 border-transparent focus:ring-0 focus:border-primary-fixed transition-all px-4 py-3 rounded-lg placeholder:text-outline/50" placeholder="example@yody.com" type="email"/>
                   </div>
                 </div>
               </div>
@@ -157,7 +157,7 @@ const Registration = () => {
                     <span className="material-symbols-outlined">arrow_forward</span>
                   </button>
                   <p className="mt-4 text-[10px] text-center text-on-surface-variant/70 leading-relaxed">
-                    Bằng cách nhấn xác nhận, bạn đồng ý với <a className="underline" href="#">Điều khoản dịch vụ</a> và <a className="underline" href="#">Chính sách bảo mật</a> của CLB PickeBall YODY.
+                    Bằng cách nhấn xác nhận, bạn đồng ý với <a className="underline" href="#">Điều khoản dịch vụ</a> và <a className="underline" href="#">Chính sách bảo mật</a> của CLB Pickleball YODY.
                   </p>
                 </div>
               </div>
