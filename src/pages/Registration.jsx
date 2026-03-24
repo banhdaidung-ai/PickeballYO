@@ -80,7 +80,7 @@ const Registration = () => {
         {/* Banner Section */}
         <section className="relative h-56 rounded-[2.5rem] overflow-hidden group shadow-2xl shadow-orange-900/10">
           <img 
-            src="/images/registration-banner.png" 
+            src="images/registration-banner.png" 
             alt="Pickleball Player" 
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
           />
