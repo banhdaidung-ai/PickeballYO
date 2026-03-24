@@ -5,181 +5,106 @@ const Registration = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-background font-body text-on-surface min-h-screen selection:bg-primary-container selection:text-on-primary">
-      <header className="fixed top-0 w-full z-50 bg-orange-50/80 backdrop-blur-md flex justify-between items-center px-6 h-16">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center border-2 border-primary-container">
-            <span className="text-primary font-black text-lg font-headline leading-none">Y</span>
-          </div>
-          <span className="text-xl font-black italic text-orange-600 tracking-tight font-headline">CLB Pickleball YODY</span>
-        </div>
+    <div className="min-h-screen bg-[#FFF8F3] font-body text-[#4A2C2A] pb-10">
+      {/* Header */}
+      <header className="flex justify-between items-center px-6 py-6 sticky top-0 bg-[#FFF8F3]/80 backdrop-blur-md z-50">
         <button 
           onClick={() => navigate(-1)}
-          className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 duration-200"
+          className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm active:scale-95 transition-all text-[#FF7A00]"
         >
-          <span className="material-symbols-outlined">close</span>
+          <span className="material-symbols-outlined font-bold">arrow_back</span>
+        </button>
+        <h1 className="text-xl font-black italic tracking-tighter text-[#4A2C2A] font-headline uppercase">CLUB JOIN</h1>
+        <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#FF7A00] shadow-lg shadow-orange-900/20 text-white">
+          <span className="material-symbols-outlined font-bold">help</span>
         </button>
       </header>
 
-      <main className="pt-24 pb-12 px-6 max-w-5xl mx-auto">
-        <section className="mb-12 relative">
-          <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary-container/10 rounded-full blur-3xl"></div>
-          <h1 className="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-none mb-4 uppercase">
-            JOIN THE <span className="text-primary-fixed italic lowercase">MOMENTUM.</span>
-          </h1>
-          <p className="text-secondary max-w-md font-medium">Bắt đầu hành trình Pickleball chuyên nghiệp cùng cộng đồng YODY.</p>
-        </section>
-
-        <form className="grid grid-cols-1 lg:grid-cols-12 gap-8" onSubmit={(e) => e.preventDefault()}>
-          <div className="lg:col-span-7 space-y-8">
-            <div className="bg-surface-container-low p-8 rounded-xl shadow-sm">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary mb-6 flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-primary-fixed"></span> Thông tin cá nhân
-              </h2>
-              <div className="space-y-6">
-                <div className="relative group">
-                  <label className="block text-xs font-bold text-on-surface-variant uppercase mb-2 ml-1">Họ và tên</label>
-                  <input className="w-full bg-surface-container border-none border-b-2 border-transparent focus:ring-0 focus:border-primary-fixed transition-all px-4 py-3 rounded-lg placeholder:text-outline/50" placeholder="Nguyễn Văn A" type="text"/>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="relative group">
-                    <label className="block text-xs font-bold text-on-surface-variant uppercase mb-2 ml-1">Số điện thoại</label>
-                    <input className="w-full bg-surface-container border-none border-b-2 border-transparent focus:ring-0 focus:border-primary-fixed transition-all px-4 py-3 rounded-lg placeholder:text-outline/50" placeholder="090 123 4567" type="tel"/>
-                  </div>
-                  <div className="relative group">
-                    <label className="block text-xs font-bold text-on-surface-variant uppercase mb-2 ml-1">Email</label>
-                    <input className="w-full bg-surface-container border-none border-b-2 border-transparent focus:ring-0 focus:border-primary-fixed transition-all px-4 py-3 rounded-lg placeholder:text-outline/50" placeholder="example@yody.com" type="email"/>
-                  </div>
-                </div>
-              </div>
+      <main className="px-6 space-y-10 max-w-lg mx-auto">
+        {/* Step Indicator */}
+        <section className="relative px-2">
+          <div className="flex justify-between items-start relative z-10">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#C35A00] text-white flex items-center justify-center font-headline font-black text-xl shadow-xl shadow-orange-900/30 ring-4 ring-white">1</div>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">INFO</span>
             </div>
-
-            <div className="space-y-6">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-primary-fixed"></span> Chọn gói thành viên
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <label className="relative cursor-pointer group">
-                  <input defaultChecked className="peer sr-only" name="membership" type="radio"/>
-                  <div className="h-full p-6 rounded-xl bg-surface-container-low border-2 border-transparent peer-checked:border-primary-fixed peer-checked:bg-surface-container-high transition-all flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="material-symbols-outlined text-secondary">star</span>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter text-secondary opacity-60">Standard</span>
-                      </div>
-                      <h3 className="text-xl font-black italic tracking-tight text-on-surface mb-1">BASIC</h3>
-                      <p className="text-2xl font-black text-primary leading-none mb-4">500k<span className="text-xs font-normal text-on-surface-variant">/tháng</span></p>
-                    </div>
-                    <ul className="text-[11px] space-y-2 text-on-surface-variant font-medium">
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> 4 buổi/tháng</li>
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Giờ thường</li>
-                    </ul>
-                  </div>
-                </label>
-
-                <label className="relative cursor-pointer group">
-                  <input className="peer sr-only" name="membership" type="radio"/>
-                  <div className="h-full p-6 rounded-xl bg-surface-container-low border-2 border-transparent peer-checked:border-primary-fixed peer-checked:bg-surface-container-high transition-all flex flex-col justify-between overflow-hidden">
-                    <div className="absolute -right-4 -top-4 bg-primary-fixed text-white text-[8px] font-bold px-8 py-1 rotate-45">POPULAR</div>
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="material-symbols-outlined text-primary-fixed" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter text-primary-fixed">Pro</span>
-                      </div>
-                      <h3 className="text-xl font-black italic tracking-tight text-on-surface mb-1">PREMIUM</h3>
-                      <p className="text-2xl font-black text-primary leading-none mb-4">1.2M<span className="text-xs font-normal text-on-surface-variant">/tháng</span></p>
-                    </div>
-                    <ul className="text-[11px] space-y-2 text-on-surface-variant font-medium">
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> 12 buổi/tháng</li>
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Mọi khung giờ</li>
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Ưu đãi sự kiện</li>
-                    </ul>
-                  </div>
-                </label>
-
-                <label className="relative cursor-pointer group">
-                  <input className="peer sr-only" name="membership" type="radio"/>
-                  <div className="h-full p-6 rounded-xl bg-surface-container-low border-2 border-transparent peer-checked:border-primary-fixed peer-checked:bg-surface-container-high transition-all flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="material-symbols-outlined text-on-surface" style={{ fontVariationSettings: "'FILL' 1" }}>trophy</span>
-                        <span className="text-[10px] font-bold uppercase tracking-tighter text-on-surface opacity-60">Elite</span>
-                      </div>
-                      <h3 className="text-xl font-black italic tracking-tight text-on-surface mb-1">ELITE</h3>
-                      <p className="text-2xl font-black text-primary leading-none mb-4">2.5M<span className="text-xs font-normal text-on-surface-variant">/tháng</span></p>
-                    </div>
-                    <ul className="text-[11px] space-y-2 text-on-surface-variant font-medium">
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Không giới hạn</li>
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Huấn luyện viên 1:1</li>
-                      <li className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">check_circle</span> Nước &amp; Locker</li>
-                    </ul>
-                  </div>
-                </label>
-              </div>
+            <div className="flex flex-col items-center gap-2 mt-2">
+              <div className="w-10 h-10 rounded-full bg-white border-2 border-[#EAD0C0] text-[#D5B8A6] flex items-center justify-center font-headline font-bold text-lg">2</div>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">PLAN</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 mt-2">
+              <div className="w-10 h-10 rounded-full bg-white border-2 border-[#EAD0C0] text-[#D5B8A6] flex items-center justify-center font-headline font-bold text-lg">3</div>
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">PAYMENT</span>
             </div>
           </div>
+          {/* Connector Lines */}
+          <div className="absolute top-6 left-12 right-12 h-[2px] bg-[#EAD0C0] -z-0"></div>
+        </section>
 
-          <aside className="lg:col-span-5 space-y-6">
-            <div className="sticky top-24 space-y-6">
-              <div className="bg-surface-container-high/50 p-8 rounded-2xl border-2 border-surface-container">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">Phương thức thanh toán</h2>
-                <div className="space-y-3">
-                  <label className="flex items-center p-4 bg-white rounded-xl cursor-pointer hover:shadow-md transition-shadow group">
-                    <input defaultChecked className="peer sr-only" name="payment" type="radio"/>
-                    <span className="material-symbols-outlined mr-3 text-secondary peer-checked:text-primary-fixed">credit_card</span>
-                    <span className="flex-grow text-sm font-bold text-on-surface">Thẻ tín dụng / Ghi nợ</span>
-                    <div className="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:bg-primary-fixed peer-checked:border-primary-fixed flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </label>
-                  <label className="flex items-center p-4 bg-white rounded-xl cursor-pointer hover:shadow-md transition-shadow group">
-                    <input className="peer sr-only" name="payment" type="radio"/>
-                    <span className="material-symbols-outlined mr-3 text-secondary peer-checked:text-primary-fixed">account_balance</span>
-                    <span className="flex-grow text-sm font-bold text-on-surface">Chuyển khoản NH</span>
-                    <div className="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:bg-primary-fixed peer-checked:border-primary-fixed flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </label>
-                  <label className="flex items-center p-4 bg-white rounded-xl cursor-pointer hover:shadow-md transition-shadow group">
-                    <input className="peer sr-only" name="payment" type="radio"/>
-                    <span className="material-symbols-outlined mr-3 text-secondary peer-checked:text-primary-fixed">wallet</span>
-                    <span className="flex-grow text-sm font-bold text-on-surface">Ví điện tử (Momo, ZaloPay)</span>
-                    <div className="w-5 h-5 border-2 border-outline-variant rounded-full peer-checked:bg-primary-fixed peer-checked:border-primary-fixed flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  </label>
-                </div>
-                <div className="mt-8 pt-6 border-t border-outline-variant/20">
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="text-on-surface-variant font-medium">Tổng thanh toán:</span>
-                    <span className="text-3xl font-black text-primary tracking-tight">500.000đ</span>
-                  </div>
-                  <button className="w-full bg-gradient-to-br from-primary to-primary-container text-white font-headline font-black py-4 rounded-xl shadow-[0_8px_30px_rgba(255,123,4,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest" type="submit">
-                    Xác nhận đăng ký
-                    <span className="material-symbols-outlined">arrow_forward</span>
-                  </button>
-                  <p className="mt-4 text-[10px] text-center text-on-surface-variant/70 leading-relaxed">
-                    Bằng cách nhấn xác nhận, bạn đồng ý với <a className="underline" href="#">Điều khoản dịch vụ</a> và <a className="underline" href="#">Chính sách bảo mật</a> của CLB Pickleball YODY.
-                  </p>
-                </div>
-              </div>
-              <div className="bg-primary/5 p-6 rounded-2xl flex items-center gap-4">
-                <div className="bg-primary-container w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-white shadow-lg">
-                  <span className="material-symbols-outlined">support_agent</span>
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold text-primary uppercase">Cần hỗ trợ?</p>
-                  <p className="text-sm font-medium text-on-surface">Liên hệ ngay hotline 1900 8888 để được tư vấn gói phù hợp nhất.</p>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </form>
+        {/* Title */}
+        <section>
+          <h2 className="text-4xl font-headline font-black text-[#4A2C2A] relative inline-block">
+            PersonalInfo
+            <span className="absolute -bottom-1 left-0 w-full h-1 bg-[#FF7A00] rounded-full"></span>
+          </h2>
+        </section>
+
+        {/* Form Fields */}
+        <section className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-[#4A2C2A]/60 ml-1">FULL NAME</label>
+            <input 
+              type="text" 
+              placeholder="Enter your full name"
+              className="w-full h-16 bg-[#FDF0E5] border-none rounded-3xl px-6 focus:ring-2 focus:ring-[#FF7A00]/20 transition-all placeholder:text-[#D5B8A6] font-medium"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-[#4A2C2A]/60 ml-1">PHONE NUMBER</label>
+            <input 
+              type="tel" 
+              placeholder="+84 ..."
+              className="w-full h-16 bg-[#FDF0E5] border-none rounded-3xl px-6 focus:ring-2 focus:ring-[#FF7A00]/20 transition-all placeholder:text-[#D5B8A6] font-medium"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-[#4A2C2A]/60 ml-1">EMAIL</label>
+            <input 
+              type="email" 
+              placeholder="hello@example.com"
+              className="w-full h-16 bg-[#FDF0E5] border-none rounded-3xl px-6 focus:ring-2 focus:ring-[#FF7A00]/20 transition-all placeholder:text-[#D5B8A6] font-medium"
+            />
+          </div>
+        </section>
+
+        {/* Banner Section */}
+        <section className="relative h-56 rounded-[2.5rem] overflow-hidden group shadow-2xl shadow-orange-900/10">
+          <img 
+            src="/images/registration-banner.png" 
+            alt="Pickleball Player" 
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="absolute bottom-6 left-8 right-8">
+            <h3 className="text-3xl font-headline font-black text-white leading-none mb-1 tracking-tighter">
+              JOIN THE <span className="text-[#FF7A00] italic">MOVEMENT.</span>
+            </h3>
+            <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest">LEVEL UP YOUR GAME TODAY</p>
+          </div>
+        </section>
+
+        {/* Action Button */}
+        <section className="pt-4">
+          <button className="w-full h-20 bg-gradient-to-br from-[#A54B00] via-[#FF7A00] to-[#FF9E4D] text-white rounded-[2rem] font-headline font-black text-xl tracking-tight shadow-xl shadow-orange-900/40 flex items-center justify-center gap-3 active:scale-95 transition-all uppercase px-8">
+            CONFIRM REGISTRATION
+            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>rocket_launch</span>
+          </button>
+        </section>
       </main>
 
-      <div className="fixed bottom-0 right-0 -z-10 w-1/2 h-1/2 opacity-20 pointer-events-none">
-        <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-primary-container/40 to-transparent blur-[120px]"></div>
-      </div>
+      {/* Decorative background elements */}
+      <div className="fixed -bottom-20 -right-20 w-80 h-80 bg-[#FF7A00]/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+      <div className="fixed top-40 -left-20 w-64 h-64 bg-[#FF7A00]/5 rounded-full blur-[80px] pointer-events-none -z-10"></div>
     </div>
   );
 };
