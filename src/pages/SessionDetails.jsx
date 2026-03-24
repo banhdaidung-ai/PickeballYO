@@ -15,7 +15,7 @@ const SessionDetails = () => {
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
           <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center border-2 border-primary-container">
-            <span className="text-yellow-400 font-black text-lg font-headline leading-none">Y</span>
+            <span className="text-primary font-black text-lg font-headline leading-none">Y</span>
           </div>
           <span className="text-xl font-black italic text-orange-600 dark:text-orange-400 tracking-tight font-headline">CLB Pickleball YODY</span>
         </div>

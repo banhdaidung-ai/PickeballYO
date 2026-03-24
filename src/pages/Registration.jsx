@@ -9,7 +9,7 @@ const Registration = () => {
       <header className="fixed top-0 w-full z-50 bg-orange-50/80 backdrop-blur-md flex justify-between items-center px-6 h-16">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center border-2 border-primary-container">
-            <span className="text-yellow-400 font-black text-lg font-headline leading-none">Y</span>
+            <span className="text-primary font-black text-lg font-headline leading-none">Y</span>
           </div>
           <span className="text-xl font-black italic text-orange-600 tracking-tight font-headline">CLB Pickleball YODY</span>
         </div>
