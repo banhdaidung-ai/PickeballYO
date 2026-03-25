@@ -9,6 +9,7 @@ Dưới đây là các quy tắc làm việc đã thống nhất giữa User và
     - Hiệu ứng đổ bóng (`shadow-xl`), dải màu gradient (`velocity-gradient`).
     - Hiệu ứng kính (`backdrop-blur`) và micro-interactions (`active:scale-95`).
 - **Bảo mật**: Luôn bảo vệ các tính năng admin bằng role `admin`.
+- **Nguyên tắc bảo toàn**: Tuyệt đối **không thay đổi** giao diện (UI) hoặc các chức năng không liên quan đến yêu cầu hiện tại để tránh gây lỗi không đáng có hoặc làm hỏng thiết kế cũ.
 
 ## ⚙️ Quy trình Kỹ thuật (Tự động hóa)
 - **Quyền tự quyết**: Khi User đã xác nhận yêu cầu cập nhật/nâng cấp, AI sẽ tự động thực hiện toàn bộ các bước mà **không cần hỏi lại**.
