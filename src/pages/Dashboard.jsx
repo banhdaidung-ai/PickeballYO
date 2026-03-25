@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { resetAndSeed } from '../services/seedService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [resetting, setResetting] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
+
+  const handleReset = async () => {
+    if (resetting) return;
+    setResetting(true);
+    try {
+      const result = await resetAndSeed();
+      alert(`✅ Cập nhật lịch thành công! Đã thêm ${result.addedCount} buổi tập mới.`);
+      setResetDone(true);
+    } catch (e) {
+      alert('❌ Lỗi: ' + e.message);
+    } finally {
+      setResetting(false);
+    }
+  };
+
 
   return (
     <main className="pt-20 px-6 max-w-2xl mx-auto space-y-10">
@@ -103,6 +121,20 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
+
+      {/* Admin: Reset Schedule */}
+      {!resetDone && (
+        <section className="pb-8">
+          <button
+            onClick={handleReset}
+            disabled={resetting}
+            className="w-full py-4 rounded-2xl border-2 border-dashed border-primary/30 text-primary font-label font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary/5 transition disabled:opacity-50"
+          >
+            <span className="material-symbols-outlined text-base">sync</span>
+            {resetting ? 'Đang cập nhật Lịch tập...' : 'Cập nhật Lịch tập mới vào hệ thống'}
+          </button>
+        </section>
+      )}
     </main>
   );
 };

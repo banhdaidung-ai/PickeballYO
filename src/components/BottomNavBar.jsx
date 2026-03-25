@@ -1,7 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const BottomNavBar = () => {
+  const { user } = useAuth();
+  
   const getNavClass = ({ isActive }) => {
     return `flex flex-col items-center justify-center px-4 py-1.5 transition-all ${
       isActive
@@ -48,14 +51,33 @@ const BottomNavBar = () => {
           </>
         )}
       </NavLink>
-      <NavLink to="/profile" className={getNavClass}>
-        {({ isActive }) => (
+      <NavLink to="/fund" className={getNavClass}>
+         {({ isActive }) => (
           <>
-            <span className="material-symbols-outlined" style={getIconStyle({isActive})}>person</span>
-            <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Hồ sơ</span>
+            <span className="material-symbols-outlined" style={getIconStyle({isActive})}>account_balance_wallet</span>
+            <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Quỹ</span>
           </>
         )}
       </NavLink>
+      {user ? (
+        <NavLink to="/profile" className={getNavClass}>
+          {({ isActive }) => (
+            <>
+              <span className="material-symbols-outlined" style={getIconStyle({isActive})}>person</span>
+              <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Hồ sơ</span>
+            </>
+          )}
+        </NavLink>
+      ) : (
+        <NavLink to="/login" className={getNavClass}>
+          {({ isActive }) => (
+            <>
+              <span className="material-symbols-outlined" style={getIconStyle({isActive})}>login</span>
+              <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Đăng nhập</span>
+            </>
+          )}
+        </NavLink>
+      )}
     </nav>
   );
 };

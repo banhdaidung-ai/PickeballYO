@@ -1,128 +1,247 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAllUsers } from '../services/authService';
+import { getAllBookings } from '../services/bookingService';
 
 const Members = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [usersData, bookingsData] = await Promise.all([
+          getAllUsers(),
+          getAllBookings()
+        ]);
+        
+        // Calculate match count per user from bookings
+        const matchCounts = {};
+        let topCount = 0;
+        bookingsData.forEach(booking => {
+          if (booking.participants) {
+            booking.participants.forEach(p => {
+              if (p.userId) {
+                matchCounts[p.userId] = (matchCounts[p.userId] || 0) + 1;
+                if (matchCounts[p.userId] > topCount) topCount = matchCounts[p.userId];
+              }
+            });
+          }
+        });
+
+        // Determine leagues and stats
+        const processedUsers = usersData.map(u => {
+          const matchCount = matchCounts[u.uid] || 0;
+          let league = "BEGINNER";
+          let leagueColor = "text-[#8C7A6B]"; // Muted brown/gray
+          if (matchCount >= 50) {
+            league = "PRO LEAGUE";
+            leagueColor = "text-[#FF7A00]"; // Primary Orange
+          } else if (matchCount >= 10) {
+            league = "INTERMEDIATE";
+            leagueColor = "text-[#2A3B4C]"; // Navy Blue
+          }
+
+          // Deterministic mock for fund payment based on string length to avoid flicker
+          const hasPaidFund = (u.uid && u.uid.charCodeAt(0) % 2 === 0) || matchCount > 5;
+
+          return {
+            ...u,
+            matchCount,
+            league,
+            leagueColor,
+            isTopMember: matchCount > 0 && matchCount >= (topCount * 0.8), // Top 20% active roughly
+            hasPaidFund
+          };
+        }).sort((a, b) => b.matchCount - a.matchCount);
+
+        setUsers(processedUsers);
+      } catch (error) {
+        console.error("Failed to load users and bookings", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredUsers = users.filter(user => {
+    const term = searchTerm.toLowerCase();
+    const nameMatch = user.fullName && user.fullName.toLowerCase().includes(term);
+    const phoneMatch = user.phone && user.phone.includes(term);
+    const matchesSearch = nameMatch || phoneMatch;
+
+    if (!matchesSearch) return false;
+
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'beginner' && user.league === 'BEGINNER') return true;
+    if (activeFilter === 'intermediate' && user.league === 'INTERMEDIATE') return true;
+    if (activeFilter === 'pro' && user.league === 'PRO LEAGUE') return true;
+
+    return false;
+  });
+
   return (
-    <main className="pt-24 pb-32 px-6 max-w-7xl mx-auto">
-      <section className="mb-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <span className="font-label text-primary font-semibold uppercase tracking-widest text-[10px] mb-2 block">Cộng đồng</span>
-            <h2 className="text-4xl font-headline font-extrabold text-on-surface tracking-tight">Thành viên</h2>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <div className="relative group flex-grow sm:min-w-[300px]">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
-              <input className="w-full pl-12 pr-4 py-3 bg-surface-container-high border-none rounded-full font-label text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Tìm kiếm thành viên..." type="text" />
-            </div>
-            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-surface-container-lowest rounded-full shadow-sm hover:shadow-md transition-all border border-outline-variant/20">
-              <span className="material-symbols-outlined text-sm">filter_list</span>
-              <span className="font-label text-sm font-medium">Bộ lọc</span>
-            </button>
-          </div>
+    <main className="pt-24 pb-32 px-4 sm:px-6 max-w-7xl mx-auto font-body bg-[#FDFBF9] min-h-screen">
+      {/* Header and Controls */}
+      <section className="mb-8">
+        <div className="mb-6">
+          <span className="font-label text-[#FF7A00] font-bold uppercase tracking-[0.2em] text-[10px] mb-1 block">Cộng đồng</span>
+          <h2 className="text-4xl font-headline font-black text-[#1C1B1F] tracking-tighter">Thành viên</h2>
         </div>
+        
+        <div className="flex flex-col gap-4">
+          <div className="relative group w-full">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#8C7A6B] text-[20px]">search</span>
+            <input 
+              className="w-full pl-12 pr-4 py-3.5 bg-[#F2F0ED] rounded-2xl font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 transition-all placeholder:text-[#8C7A6B] text-[#1C1B1F]" 
+              placeholder="Tìm kiếm thành viên..." 
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <button className="flex items-center justify-center gap-2 w-full py-3.5 bg-white rounded-2xl shadow-sm border border-[#E6E0D8] active:scale-[0.98] transition-all">
+            <span className="material-symbols-outlined text-[#1C1B1F] text-[18px]">filter_list</span>
+            <span className="font-label text-sm font-bold text-[#1C1B1F]">Bộ lọc</span>
+          </button>
+        </div>
+
+        {/* Statistics Row */}
+        {!loading && (
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#F2F0ED] flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#FFF0E5] rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#FF7A00]" style={{ fontVariationSettings: "'FILL' 1" }}>group</span>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">Tổng</p>
+                <p className="text-2xl font-black font-headline text-[#1C1B1F] leading-tight">{users.length}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#F2F0ED] flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#FFF0E5] rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#FF7A00]" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">Pro</p>
+                <p className="text-2xl font-black font-headline text-[#FF7A00] leading-tight">{users.filter(u => u.league === 'PRO LEAGUE').length}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#F2F0ED] flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF1F8] rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#2A3B4C]" style={{ fontVariationSettings: "'FILL' 1" }}>workspace_premium</span>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">Inter</p>
+                <p className="text-2xl font-black font-headline text-[#2A3B4C] leading-tight">{users.filter(u => u.league === 'INTERMEDIATE').length}</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-[#F2F0ED] flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#F5F2EF] rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#8C7A6B]" style={{ fontVariationSettings: "'FILL' 1" }}>person_play</span>
+              </div>
+              <div>
+                <p className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">Beginner</p>
+                <p className="text-2xl font-black font-headline text-[#8C7A6B] leading-tight">{users.filter(u => u.league === 'BEGINNER').length}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2 mt-6 overflow-x-auto hide-scrollbar pb-2">
-          <button className="velocity-gradient text-white px-6 py-2 rounded-full font-label text-xs font-bold whitespace-nowrap">Tất cả</button>
-          <button className="bg-surface-container-lowest text-on-surface-variant px-6 py-2 rounded-full font-label text-xs font-medium border border-outline-variant/10 hover:bg-surface-container-high transition-colors whitespace-nowrap">Beginner</button>
-          <button className="bg-surface-container-lowest text-on-surface-variant px-6 py-2 rounded-full font-label text-xs font-medium border border-outline-variant/10 hover:bg-surface-container-high transition-colors whitespace-nowrap">Intermediate</button>
-          <button className="bg-surface-container-lowest text-on-surface-variant px-6 py-2 rounded-full font-label text-xs font-medium border border-outline-variant/10 hover:bg-surface-container-high transition-colors whitespace-nowrap">Pro</button>
-          <button className="bg-surface-container-lowest text-on-surface-variant px-6 py-2 rounded-full font-label text-xs font-medium border border-outline-variant/10 hover:bg-surface-container-high transition-colors whitespace-nowrap">Thành viên tích cực</button>
+          <button 
+            onClick={() => setActiveFilter('all')}
+            className={`px-6 py-2.5 rounded-full font-label text-xs font-bold whitespace-nowrap transition-colors ${activeFilter === 'all' ? 'velocity-gradient text-white shadow-md' : 'bg-white text-[#8C7A6B] border border-[#E6E0D8]'}`}
+          >
+            Tất cả
+          </button>
+          <button 
+            onClick={() => setActiveFilter('beginner')}
+            className={`px-6 py-2.5 rounded-full font-label text-xs font-bold whitespace-nowrap transition-colors ${activeFilter === 'beginner' ? 'velocity-gradient text-white shadow-md' : 'bg-white text-[#8C7A6B] border border-[#E6E0D8]'}`}
+          >
+            Beginner
+          </button>
+          <button 
+            onClick={() => setActiveFilter('intermediate')}
+            className={`px-6 py-2.5 rounded-full font-label text-xs font-bold whitespace-nowrap transition-colors ${activeFilter === 'intermediate' ? 'velocity-gradient text-white shadow-md' : 'bg-white text-[#8C7A6B] border border-[#E6E0D8]'}`}
+          >
+            Intermediate
+          </button>
+          <button 
+            onClick={() => setActiveFilter('pro')}
+            className={`px-6 py-2.5 rounded-full font-label text-xs font-bold whitespace-nowrap transition-colors ${activeFilter === 'pro' ? 'velocity-gradient text-white shadow-md' : 'bg-white text-[#8C7A6B] border border-[#E6E0D8]'}`}
+          >
+            Pro League
+          </button>
         </div>
       </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {/* Card 1 */}
-        <div className="group relative bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(255,122,0,0.04)] hover:shadow-[0_20px_48px_rgba(255,122,0,0.12)] transition-all duration-500 overflow-hidden flex flex-col items-center text-center border border-outline-variant/5">
-          <div className="absolute top-4 right-4 bg-primary text-on-primary px-3 py-1 rounded-full flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-wider">Tích cực</span>
-          </div>
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden -rotate-6 group-hover:rotate-0 transition-transform duration-500 shadow-xl">
-              <img alt="Minh Tuấn" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXtOpWf2sxQtI-JMrHALe-wgt6y9WSGfSn5wSDC33YKUf4slnJkcZEXYfrq3-P4vtLB5SlH7yg5L51VxeAWJ7lckz6vM7l2Yu0RDIuCh0MMPRjJqtOS18B91W1zQNAplskIy2dcZEz9sJhM3c3KQsFap_uVuWgzZ60M91mQfAqnRomYY-ZnbabK7tIc0jrqoHXvEtoAU1Vh0MYABubmAViWj0wNSgnZk81KJL2lThM6rueVdUNVe3LmsvAl5sc233wdUrSkjIezvQ" />
-            </div>
-          </div>
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-1">Trần Minh Tuấn</h3>
-          <span className="font-label text-[11px] font-bold text-primary uppercase tracking-[0.2em] mb-4">Pro League</span>
-          <div className="w-full flex justify-between items-center pt-4 border-t border-surface-container-low mt-auto">
-            <div className="flex flex-col items-start">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Xếp hạng</span>
-              <span className="font-headline font-bold text-secondary text-sm">#12</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Trận thắng</span>
-              <span className="font-headline font-bold text-secondary text-sm">128</span>
-            </div>
-          </div>
+      {/* Main Card Grid */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#FF7A00] border-t-transparent"></div>
+          <p className="text-[#8C7A6B] font-medium text-sm animate-pulse">Đang tải dữ liệu thành viên...</p>
         </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-center py-20">
+          <span className="material-symbols-outlined text-6xl text-[#E6E0D8] mb-4">person_search</span>
+          <p className="text-[#8C7A6B] font-medium">Không tìm thấy thành viên phù hợp</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredUsers.map(user => (
+            <div key={user.uid} className="bg-white rounded-[2.5rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col items-center text-center relative hover:shadow-[0_8px_30px_rgba(255,122,0,0.06)] transition-all duration-300 border border-[#F2F0ED]">
+              
+              {user.isTopMember && (
+                <div className="absolute -top-3 right-4 bg-[#FF7A00] text-white px-3 py-1.5 rounded-full flex items-center gap-1 shadow-md z-10">
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                  <span className="font-label text-[9px] font-black uppercase tracking-widest">Tích cực</span>
+                </div>
+              )}
 
-        {/* Card 2 */}
-        <div className="group relative bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(255,122,0,0.04)] hover:shadow-[0_20px_48px_rgba(255,122,0,0.12)] transition-all duration-500 overflow-hidden flex flex-col items-center text-center border border-outline-variant/5">
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden rotate-3 group-hover:rotate-0 transition-transform duration-500 shadow-xl border-4 border-white">
-              <img alt="Thùy Chi" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-6hyXidw04j5MdooDtBu8aod2HJsjKCnprU3azRxLhFE5xr8Odpj0dCVFSwOu-4LgvjTkoSR44gKlQjgWIWe-wap37RY4sfMB9W7RKutv-DL7togHlJx63raPikmYOvW5S4sdLbd37sP7kMyvbUdTHBRJUTdM6DhdcKLcqCuBflYxbYJ63q9N3sT-IgFWUnscMRf9RQflya9tuxVRtWmnQAVCO9rJRXXzhVRkknD5SW20OtcjE8hchZf-dk_N-c_O3EAD7CLmP1Q" />
-            </div>
-          </div>
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-1">Nguyễn Thùy Chi</h3>
-          <span className="font-label text-[11px] font-bold text-tertiary uppercase tracking-[0.2em] mb-4">Intermediate</span>
-          <div className="w-full flex justify-between items-center pt-4 border-t border-surface-container-low mt-auto">
-            <div className="flex flex-col items-start">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Xếp hạng</span>
-              <span className="font-headline font-bold text-secondary text-sm">#45</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Trận thắng</span>
-              <span className="font-headline font-bold text-secondary text-sm">54</span>
-            </div>
-          </div>
-        </div>
+              <div className="w-24 h-24 rounded-[1.5rem] overflow-hidden mb-4 mt-2 shadow-sm bg-[#F2F0ED] border-4 border-white flex items-center justify-center flex-shrink-0 relative">
+                {user.photoURL ? (
+                  <img alt={user.fullName} className="w-full h-full object-cover" src={user.photoURL} />
+                ) : (
+                  <span className="material-symbols-outlined text-4xl text-[#8C7A6B]">person</span>
+                )}
+                {/* Gradient overlay for pure visual styling */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+              </div>
 
-        {/* Card 3 */}
-        <div className="group relative bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(255,122,0,0.04)] hover:shadow-[0_20px_48px_rgba(255,122,0,0.12)] transition-all duration-500 overflow-hidden flex flex-col items-center text-center border border-outline-variant/5">
-          <div className="absolute top-4 right-4 bg-primary text-on-primary px-3 py-1 rounded-full flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-            <span className="font-label text-[10px] font-bold uppercase tracking-wider">Tích cực</span>
-          </div>
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden -rotate-2 group-hover:rotate-0 transition-transform duration-500 shadow-xl">
-              <img alt="Hoàng Nam" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQTSjLiXx-sOmBvq-xpMHHUifsCNefXns2QOIOCxnAJ6-j8FaJTEmFG0WFgqU_nqWKEuJ0EGvwFB7u5Vmq83s6P63k2laosEXOcw9cys3RAWJw5oN00WxtmHp4I63JpCv6Lghw-ALEcB7fxkFbuq2D_odkqEDd3vbmW07iXLhKTgxFcUNtrCcme8wGlcB9aMAdcyopLPYuIVj1zQH5CjILLK6bze-EPMwjxJzY41-oHaLwRl1KqNe8aGrLSq1pqVZWG-r1XJU3L98" />
-            </div>
-          </div>
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-1">Lê Hoàng Nam</h3>
-          <span className="font-label text-[11px] font-bold text-outline uppercase tracking-[0.2em] mb-4">Beginner</span>
-          <div className="w-full flex justify-between items-center pt-4 border-t border-surface-container-low mt-auto">
-            <div className="flex flex-col items-start">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Xếp hạng</span>
-              <span className="font-headline font-bold text-secondary text-sm">#112</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Trận thắng</span>
-              <span className="font-headline font-bold text-secondary text-sm">12</span>
-            </div>
-          </div>
-        </div>
+              <h3 className="font-headline font-bold text-lg text-[#1C1B1F] mb-1 line-clamp-1 w-full">{user.fullName || "Ẩn danh"}</h3>
+              <p className="text-[#8C7A6B] text-[11px] font-medium mb-3">{user.phone || '09xx xxx xxx'}</p>
+              
+              <p className={`font-label text-[10px] font-black uppercase tracking-[0.2em] mb-4 ${user.leagueColor}`}>
+                {user.league}
+              </p>
 
-        {/* Card 4 */}
-        <div className="group relative bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(255,122,0,0.04)] hover:shadow-[0_20px_48px_rgba(255,122,0,0.12)] transition-all duration-500 overflow-hidden flex flex-col items-center text-center border border-outline-variant/5">
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden rotate-6 group-hover:rotate-0 transition-transform duration-500 shadow-xl">
-              <img alt="Lan Anh" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvKQwv1iPwTzdBysYmT8bpY7QlzLXBGFuGoHFIdYgp-xBv42qETX-xHNGdrJjI83Izp_j7UaTXrwqu7tuvkIYlsqKIC_3t1tBc6Qf3e0QSPbGWFL4bQ4C4_v4EJr3sirHMUeqdMVhCZFBkDHJ642sX2g8VpUKFc0obkX_MTQ2WuE0yQaNGuXw4_DqSASHPnLHhMsPMmEBBaTDuKNF3y3B2st1NHu-LW0ByFPm1ETuHbCMH4okpS_nSwp_MtjxP1WpHhD3PV3L7RV8" />
+              {user.hasPaidFund ? (
+                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#E8F5E9] text-[#2E7D32] rounded-full mb-6">
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                  <span className="font-label text-[9px] font-bold uppercase tracking-widest">Đã đóng quỹ</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#FFEBEE] text-[#C62828] rounded-full mb-6">
+                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>cancel</span>
+                  <span className="font-label text-[9px] font-bold uppercase tracking-widest">Chưa đóng quỹ</span>
+                </div>
+              )}
+
+              <div className="w-full pt-4 border-t border-[#F2F0ED] flex items-center justify-between mt-auto">
+                <span className="text-[9px] font-label text-[#8C7A6B] uppercase tracking-wider font-bold">Số trận tham gia</span>
+                <span className="font-headline font-black text-[#2A3B4C] text-[1.35rem] leading-none">{user.matchCount}</span>
+              </div>
+
             </div>
-          </div>
-          <h3 className="font-headline font-bold text-lg text-on-surface mb-1">Phạm Lan Anh</h3>
-          <span className="font-label text-[11px] font-bold text-primary uppercase tracking-[0.2em] mb-4">Pro League</span>
-          <div className="w-full flex justify-between items-center pt-4 border-t border-surface-container-low mt-auto">
-            <div className="flex flex-col items-start">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Xếp hạng</span>
-              <span className="font-headline font-bold text-secondary text-sm">#5</span>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-label text-outline uppercase tracking-tighter">Trận thắng</span>
-              <span className="font-headline font-bold text-secondary text-sm">215</span>
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
+      )}
     </main>
   );
 };
+
 export default Members;

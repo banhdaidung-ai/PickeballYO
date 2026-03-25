@@ -17,11 +17,31 @@ export const subscribeToSchedule = (callback) => {
   });
 };
 
-export const joinSession = async (sessionId, userId) => {
-  const sessionDoc = doc(db, COLLECTION_NAME, sessionId);
-  // Add userId to participants array if not already present
-  // Note: This is a simple implementation. In a real app, you'd use arrayUnion and proper auth.
-  return updateDoc(sessionDoc, {
-    participants: [userId] // Placeholder for more complex array update
+export const getSessionById = async (id) => {
+  try {
+    const sessionDoc = await getDocs(query(collection(db, COLLECTION_NAME)));
+    // In a real app, use doc(db, COLLECTION_NAME, id), but ids might be custom or generated
+    const docRef = doc(db, COLLECTION_NAME, id);
+    const docSnap = await getDocs(query(collection(db, COLLECTION_NAME)));
+    // Simpler way:
+    const q = query(collection(db, COLLECTION_NAME));
+    const querySnapshot = await getDocs(q);
+    const session = querySnapshot.docs.find(d => d.id === id);
+    if (session) {
+      return { id: session.id, ...session.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting session:", error);
+    throw error;
+  }
+};
+
+export const subscribeToSession = (id, callback) => {
+  const docRef = doc(db, COLLECTION_NAME, id);
+  return onSnapshot(docRef, (doc) => {
+    if (doc.exists()) {
+      callback({ id: doc.id, ...doc.data() });
+    }
   });
 };

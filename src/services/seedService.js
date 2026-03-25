@@ -4,76 +4,67 @@ import { db } from "../firebase";
 const COLLECTION_NAME = "schedule";
 const scheduleData = [
   {
-    dayIndex: 0,
+    dayIndex: 1, // Thứ 2 - JS getDay() = 1
     startTime: "17:30",
     dayLabel: "Thứ 2 (T2)",
-    courtName: "Sân TDS",
+    courtName: "SÂN TDS",
     timeRange: "17:30 - 19:30",
     type: "Sân Pickleball",
     isLive: false,
     participants: []
   },
   {
-    dayIndex: 1,
+    dayIndex: 2, // Thứ 3 - JS getDay() = 2
     startTime: "17:30",
     dayLabel: "Thứ 3 (T3)",
-    courtName: "Sân Divo",
+    courtName: "SÂN DIVO",
     timeRange: "17:30 - 19:30",
     type: "Hợp đồng cố định",
     isLive: false,
     participants: []
   },
   {
-    dayIndex: 2,
+    dayIndex: 3, // Thứ 4 - JS getDay() = 3
     startTime: "17:30",
     dayLabel: "Thứ 4 (T4)",
-    courtName: "Sân TDS",
+    courtName: "SÂN TDS",
     timeRange: "17:30 - 19:30",
     type: "Sân Pickleball",
-    isLive: true,
+    isLive: false,
     participants: []
   },
   {
-    dayIndex: 3,
+    dayIndex: 4, // Thứ 5 - JS getDay() = 4
     startTime: "17:30",
     dayLabel: "Thứ 5 (T5)",
-    courtName: "Sân Divo",
+    courtName: "SÂN DIVO",
     timeRange: "17:30 - 19:30",
     type: "Hợp đồng cố định",
     isLive: false,
     participants: []
   },
   {
-    dayIndex: 4,
-    startTime: "10:30",
-    dayLabel: "Thứ 6 (T6)",
-    courtName: "Sân TDS",
-    timeRange: "10:30 - 12:30",
-    type: "Sân Pickleball",
-    isLive: false,
-    participants: []
-  },
-  {
-    dayIndex: 5,
+    dayIndex: 6, // Thứ 7 - JS getDay() = 6
     startTime: "06:00",
     dayLabel: "Thứ 7 (T7)",
-    courtName: "Sân Divo",
+    courtName: "SÂN DIVO",
     timeRange: "06:00 - 08:00",
     type: "Hợp đồng cố định",
     isLive: false,
     participants: []
   },
   {
-    dayIndex: 6,
+    dayIndex: 0, // Chủ Nhật - JS getDay() = 0
     startTime: "06:00",
     dayLabel: "Chủ Nhật (CN)",
-    courtName: "Sân Divo",
+    courtName: "SÂN DIVO",
     timeRange: "06:00 - 08:00",
     type: "Hợp đồng cố định",
     isLive: false,
     participants: []
   }
 ];
+
 
 // Helper to check if a session already exists
 const sessionExists = async (dayLabel, startTime) => {
