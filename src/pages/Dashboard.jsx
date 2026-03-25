@@ -12,6 +12,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [todaySession, setTodaySession] = useState(null);
+  const [tomorrowSession, setTomorrowSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showParticipants, setShowParticipants] = useState(false);
 
@@ -35,8 +36,13 @@ const Dashboard = () => {
   useEffect(() => {
     const unsubscribe = subscribeToSchedule((data) => {
       const todayIndex = new Date().getDay();
+      const tomorrowIndex = (todayIndex + 1) % 7;
+      
       const sessionForToday = data.find(s => s.dayIndex === todayIndex);
+      const sessionForTomorrow = data.find(s => s.dayIndex === tomorrowIndex);
+      
       setTodaySession(sessionForToday || null);
+      setTomorrowSession(sessionForTomorrow || null);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -102,84 +108,101 @@ const Dashboard = () => {
         </section>
 
         <section>
-          <div className="font-label text-xs font-semibold text-secondary uppercase tracking-wider mb-4 px-1">Buổi tập hôm nay</div>
+          <div className="font-label text-xs font-semibold text-secondary uppercase tracking-wider mb-4 px-1 flex items-center justify-between">
+             <span>Lịch tập tiếp theo</span>
+             {todaySession && <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Hôm nay</span>}
+          </div>
+          
           {loading ? (
-            <div className="bg-surface-container-lowest rounded-[2rem] p-6 flex justify-center py-12">
+            <div className="bg-white rounded-[2rem] p-6 flex justify-center py-12 border border-[#F2F0ED]">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          ) : todaySession ? (
-            <div 
-              onClick={() => navigate(`/session/${todaySession.id}`)}
-              className="bg-surface-container-lowest rounded-[2rem] p-6 shadow-[0_8px_24px_rgba(255,122,0,0.06)] relative overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 velocity-gradient opacity-10 rounded-bl-full translate-x-8 -translate-y-8 group-hover:scale-110 transition-transform duration-700"></div>
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex gap-4">
-                  <div className="bg-primary-container rounded-2xl w-14 h-14 flex flex-col items-center justify-center text-on-primary-container shrink-0">
-                    <span className="text-xs font-label font-bold uppercase">{WEEKDAY_LABELS[todaySession.dayIndex]}</span>
-                    <span className="text-xl font-headline font-extrabold leading-none">{todayDateObj.getDate()}</span>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                       {todaySession.locationUrl ? (
-                        <a 
-                          href={todaySession.locationUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="font-headline text-lg font-bold text-primary hover:text-[#C35A00] transition-colors line-clamp-1 flex items-center gap-1"
-                        >
-                          {todaySession.courtName || 'Sân trống'}
-                          <span className="material-symbols-outlined text-xs">open_in_new</span>
-                        </a>
-                      ) : (
-                        <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
-                      )}
-                      
-                      {todaySession.locationUrl && (
-                        <a 
-                          href={todaySession.locationUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex items-center justify-center w-7 h-7 rounded-full bg-[#FFF0E5] text-[#FF7A00] hover:bg-[#FFE0CC] transition-colors"
-                          title="Xem bản đồ"
-                        >
-                          <span className="material-symbols-outlined text-lg">location_on</span>
-                        </a>
-                      )}
+          ) : (
+            <div className="relative">
+              {/* Today's Session Card */}
+              {todaySession ? (
+                <div 
+                  onClick={() => navigate(`/session/${todaySession.id}`)}
+                  className="bg-white rounded-[2rem] p-6 shadow-[0_20px_50px_rgba(255,122,0,0.12)] relative overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-500 z-20 border border-primary/10 mb-[-20px]"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 velocity-gradient opacity-10 rounded-bl-full translate-x-8 -translate-y-8 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex gap-4">
+                      <div className="bg-primary-container rounded-2xl w-14 h-14 flex flex-col items-center justify-center text-on-primary-container shrink-0">
+                        <span className="text-xs font-label font-bold uppercase">{WEEKDAY_LABELS[todaySession.dayIndex]}</span>
+                        <span className="text-xl font-headline font-extrabold leading-none">{todayDateObj.getDate()}</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                           {todaySession.locationUrl ? (
+                            <a 
+                              href={todaySession.locationUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="font-headline text-lg font-bold text-primary hover:text-[#C35A00] transition-colors line-clamp-1 flex items-center gap-1"
+                            >
+                              {todaySession.courtName || 'Sân trống'}
+                              <span className="material-symbols-outlined text-xs">open_in_new</span>
+                            </a>
+                          ) : (
+                            <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
+                          )}
+                        </div>
+                        <p className="font-label text-sm text-secondary flex items-center gap-1 mt-1 font-medium">
+                          <span className="material-symbols-outlined text-base">schedule</span> {todaySession.startTime || '00:00'} - {todaySession.timeRange?.split('-')[1]?.trim() || 'Hết giờ'}
+                        </p>
+                      </div>
                     </div>
-                    <p className="font-label text-sm text-secondary flex items-center gap-1 mt-1">
-                      <span className="material-symbols-outlined text-base">schedule</span> {todaySession.startTime || '00:00'} - {todaySession.timeRange?.split('-')[1]?.trim() || 'Hết giờ'}
-                    </p>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-slate-50 pt-4">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setShowParticipants(true); }}
+                      className="flex items-center gap-2 hover:bg-slate-50 px-3 py-1.5 rounded-xl transition-colors active:scale-95"
+                    >
+                      <span className="material-symbols-outlined text-secondary text-sm">group</span>
+                      <span className="text-xs font-bold text-secondary">{todaySession.participants?.length || 0} đăng ký</span>
+                    </button>
+                    <button className="velocity-gradient text-white px-6 py-2.5 rounded-xl text-xs font-label font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95 transition-all">
+                      Tham gia
+                    </button>
                   </div>
                 </div>
-                {todaySession.type && (
-                  <div className="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-[10px] font-label font-bold tracking-wide uppercase whitespace-nowrap hidden sm:block">
-                    {todaySession.type}
+              ) : !tomorrowSession ? (
+                <div className="bg-white rounded-[2rem] p-8 text-center border border-dashed border-[#F2F0ED]">
+                  <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">event_busy</span>
+                  <h3 className="font-headline font-bold text-on-surface text-lg">Không có lịch tập gần nhất</h3>
+                </div>
+              ) : null}
+
+              {/* Tomorrow's Session Card (3D Stacking Effect) */}
+              {tomorrowSession && (
+                <div 
+                  onClick={() => navigate(`/session/${tomorrowSession.id}`)}
+                  className={`bg-white/80 rounded-[2rem] p-6 border border-[#F2F0ED] shadow-sm cursor-pointer transition-all duration-500 scale-[0.92] origin-bottom hover:scale-[0.95] hover:opacity-100 relative group overflow-hidden ${todaySession ? 'opacity-40 translate-y-2' : 'scale-100 opacity-100'}`}
+                >
+                  {!todaySession && <div className="absolute top-4 right-6 text-[10px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Ngày mai</div>}
+                  <div className="flex justify-between items-start">
+                    <div className="flex gap-4 items-center">
+                      <div className="bg-slate-100 rounded-2xl w-14 h-14 flex flex-col items-center justify-center text-slate-500 shrink-0">
+                        <span className="text-[10px] font-label font-bold uppercase">{WEEKDAY_LABELS[tomorrowSession.dayIndex]}</span>
+                        <span className="text-xl font-headline font-extrabold leading-none">
+                          {new Date(new Date().setDate(new Date().getDate() + 1)).getDate()}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-headline text-base font-bold text-slate-700 line-clamp-1">{tomorrowSession.courtName}</h3>
+                        <p className="font-label text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <span className="material-symbols-outlined text-[14px]">schedule</span> {tomorrowSession.startTime}
+                        </p>
+                      </div>
+                    </div>
+                    {todaySession && (
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Ngày mai</span>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex items-center justify-between border-t border-surface-container pt-4">
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowParticipants(true); }}
-                  className="flex items-center gap-2 hover:bg-surface-container-high px-3 py-1.5 rounded-xl transition-colors active:scale-95"
-                >
-                  <span className="material-symbols-outlined text-secondary text-sm">group</span>
-                  <span className="text-xs font-bold text-secondary">{todaySession.participants?.length || 0} người tham gia</span>
-                </button>
-                <button 
-                  className="velocity-gradient text-white px-5 py-2.5 rounded-xl text-xs font-label font-bold shadow-lg shadow-primary/20 group-hover:scale-105 active:scale-95 transition-all"
-                >
-                  Tham gia
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-surface-container-lowest rounded-[2rem] p-8 text-center border border-dashed border-outline-variant/30">
-              <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">event_busy</span>
-              <h3 className="font-headline font-bold text-on-surface text-lg">Không có lịch tập hôm nay</h3>
-              <p className="text-sm text-on-surface-variant mt-1">Hãy chuẩn bị nghỉ ngơi hoặc đặt sân riêng nhé.</p>
+                </div>
+              )}
             </div>
           )}
         </section>
