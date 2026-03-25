@@ -65,6 +65,16 @@ export const seedContributionsFromUsers = async (users) => {
   }
 };
 
+/** Update a contribution record */
+export const updateContribution = async (id, data) => {
+  await updateDoc(doc(db, CONTRIBUTIONS_COL, id), data);
+};
+
+/** Delete a contribution record */
+export const deleteContribution = async (id) => {
+  await deleteDoc(doc(db, CONTRIBUTIONS_COL, id));
+};
+
 /** Delete a transaction */
 export const deleteTransaction = async (id) => {
   await deleteDoc(doc(db, TRANSACTIONS_COL, id));
