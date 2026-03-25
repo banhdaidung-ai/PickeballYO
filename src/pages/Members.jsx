@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getAllUsers } from '../services/authService';
 import { getAllBookings } from '../services/bookingService';
 
@@ -105,7 +105,7 @@ const Members = () => {
             />
           </div>
           
-          <button onClick={() => navigate('/leaderboard')} className="relative overflow-hidden flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#FF7A00] via-[#E55A00] to-[#E55A00] rounded-[20px] shadow-lg shadow-[#FF7A00]/30 border border-[#FF7A00]/20 active:scale-[0.98] transition-all group">
+          <Link to="/leaderboard" className="relative overflow-hidden flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#FF7A00] via-[#E55A00] to-[#E55A00] rounded-[20px] shadow-lg shadow-[#FF7A00]/30 border border-[#FF7A00]/20 active:scale-[0.98] transition-all group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-16 translate-x-12 pointer-events-none"></div>
             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
@@ -122,7 +122,7 @@ const Members = () => {
             <div className="relative z-10 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:translate-x-1 transition-transform">
               <span className="material-symbols-outlined text-white text-sm">arrow_forward_ios</span>
             </div>
-          </button>
+          </Link>
         </div>
 
         {/* Statistics Row */}
