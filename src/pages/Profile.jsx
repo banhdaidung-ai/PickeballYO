@@ -285,7 +285,7 @@ const Profile = () => {
             <div className="space-y-6 text-center md:text-left">
               <div>
                 <p className="font-label text-[10px] tracking-[0.2em] uppercase opacity-80">Membership Status</p>
-                <h4 className="text-3xl font-black font-headline tracking-tighter italic">ELITE ATHLETE</h4>
+                <h4 className="text-3xl font-black font-headline tracking-tighter italic">YODY Pickleball Club</h4>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-2 justify-center md:justify-start">
@@ -299,7 +299,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-inner flex flex-col items-center">
-              <img alt="QR Code" className="w-32 h-32" src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${user.uid}`} />
+              <img alt="QR Code" className="w-32 h-32" src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`Thành viên: ${userData?.fullName || 'Người dùng'}\nSĐT: ${userData?.phone || 'Chưa cập nhật'}\nEmail: ${user.email}\nID: ${user.uid}`)}`} />
               <p className="text-black font-label text-[10px] text-center mt-2 font-bold uppercase">Mã ID: {user.uid.substring(0,6)}</p>
             </div>
           </div>
@@ -324,18 +324,24 @@ const Profile = () => {
             {bookings.map(session => {
               const pInfo = session.participants.find(p => p.userId === user.uid);
               const bookedDate = new Date(pInfo.bookedAt).toLocaleDateString('vi-VN');
+              const WEEKDAY_LABELS = ['CN', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+              const sessionLabel = typeof session.dayIndex === 'number' ? WEEKDAY_LABELS[session.dayIndex] : "Chưa ấn định ngày";
+              
               return (
-                <div key={session.id} className="bg-white p-5 rounded-3xl border border-surface-variant shadow-sm flex flex-col gap-3 hover:shadow-md transition-shadow">
+                <div 
+                  key={session.id} 
+                  onClick={() => navigate(`/session/${session.id}`)}
+                  className="bg-white p-5 rounded-3xl border border-surface-variant shadow-sm flex flex-col gap-3 hover:shadow-md transition-shadow cursor-pointer"
+                >
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-bold text-secondary text-sm">{session.date || "Chưa ấn định ngày"}</p>
-                      <h4 className="font-headline font-bold text-lg">{session.title}</h4>
+                      <p className="font-bold text-secondary text-sm">{sessionLabel} • {session.timeRange || session.startTime || ''}</p>
+                      <h4 className="font-headline font-bold text-lg">{session.courtName || session.title || 'Sân Pickleball'}</h4>
                     </div>
-                    <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase">Đã Đăng Ký</span>
+                    <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-md uppercase shrink-0">Đã Đăng Ký</span>
                   </div>
                   <div className="flex gap-4 text-xs font-medium text-on-surface-variant">
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span> {session.time}</span>
-                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">location_on</span> {session.location}</span>
+                    <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">location_on</span> {session.location || 'YODY Club'}</span>
                   </div>
                   <div className="pt-3 border-t border-surface-variant text-[10px] text-outline uppercase tracking-widest font-bold">
                     Booking thao tác ngày: {bookedDate}

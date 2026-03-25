@@ -23,7 +23,7 @@ const Login = () => {
     setLoading(true);
     try {
       await signIn(formData.email, formData.password);
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email/mật khẩu.');
     } finally {
@@ -36,7 +36,7 @@ const Login = () => {
     setPopupBlocked(false);
     try {
       await signInWithGoogle();
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       console.error("Google Login Error:", err);
       if (err.code === 'auth/popup-blocked') {
@@ -65,7 +65,7 @@ const Login = () => {
     setPopupBlocked(false);
     try {
       await signInWithFacebook();
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       console.error("Facebook Login Error:", err);
       if (err.code === 'auth/popup-blocked') {
