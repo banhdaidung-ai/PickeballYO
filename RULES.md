@@ -12,8 +12,8 @@ Dưới đây là các quy tắc làm việc đã thống nhất giữa User và
 - **Nguyên tắc bảo toàn**: Tuyệt đối **không thay đổi** giao diện (UI) hoặc các chức năng không liên quan đến yêu cầu hiện tại để tránh gây lỗi không đáng có hoặc làm hỏng thiết kế cũ.
 
 ## ⚙️ Quy trình Kỹ thuật (Tự động hóa)
-- **Quyền tự quyết**: Khi User đã xác nhận yêu cầu cập nhật/nâng cấp, AI sẽ tự động thực hiện toàn bộ các bước mà **không cần hỏi lại**.
-- **Chuỗi tác vụ**: Lập kế hoạch -> Viết code -> Chỉnh sửa -> Build kiểm tra -> Git Commit/Push -> Deploy GitHub Pages.
+- **Quyền tự quyết (All Access & Run)**: Khi User đã xác nhận yêu cầu cập nhật/nâng cấp, AI có toàn quyền truy cập tệp, thực thi lệnh terminal (Run) mà **không cần hỏi lại**. AI sẽ tự động chọn "All Access" cho mọi hoạt động cần thiết để hoàn thành công việc.
+- **Chuỗi tác vụ**: Lập kế hoạch -> Viết code -> Chành sửa -> Build kiểm tra -> Git Commit/Push -> Deploy GitHub Pages.
 - **Thông báo**: Chỉ báo cáo lại (Notify User) sau khi toàn bộ chuỗi tác vụ trên đã hoàn tất.
 
 ## 🚀 Deployment
