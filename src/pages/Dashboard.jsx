@@ -68,17 +68,31 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
+                      {todaySession.locationUrl ? (
+                        <a 
+                          href={todaySession.locationUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-headline text-lg font-bold text-primary hover:text-[#C35A00] transition-colors line-clamp-1 flex items-center gap-2"
+                        >
+                          {todaySession.courtName || 'Sân trống'}
+                          <span className="material-symbols-outlined text-sm">open_in_new</span>
+                        </a>
+                      ) : (
+                        <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
+                      )}
+                      
                       {todaySession.locationUrl && (
                         <a 
                           href={todaySession.locationUrl} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFF0E5] text-[#FF7A00] hover:bg-[#FFE0CC] transition-colors"
                           title="Xem bản đồ"
                         >
-                          <span className="material-symbols-outlined text-base">location_on</span>
+                          <span className="material-symbols-outlined text-xl">location_on</span>
                         </a>
                       )}
                     </div>

@@ -337,7 +337,7 @@ const Admin = () => {
     if (!window.confirm('Cập nhật địa chỉ Google Maps cho tất cả sân TDS?')) return;
     setMaintenancing(true);
     try {
-      const tdsSessions = sessions.filter(s => s.courtName.includes('TDS'));
+      const tdsSessions = sessions.filter(s => s.courtName.toUpperCase().includes('TDS'));
       for (const s of tdsSessions) {
         await updateSession(s.id, { locationUrl: "https://maps.app.goo.gl/WSk6dBzFfs4EkYf29" });
       }
