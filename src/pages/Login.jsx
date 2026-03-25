@@ -90,7 +90,7 @@ const Login = () => {
 
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <Logo className="w-12 h-12" fontSize="text-2xl" showText={true} />
+          <Logo iconClassName="w-12 h-12" fontSize="text-2xl" showText={true} />
         </div>
 
         {/* Header */}

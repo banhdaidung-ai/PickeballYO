@@ -112,7 +112,7 @@ const Registration = () => {
         >
           <span className="material-symbols-outlined font-bold">arrow_back</span>
         </button>
-        <Logo className="w-8 h-8" showText={true} fontSize="text-xl" />
+        <Logo iconClassName="w-8 h-8" showText={true} fontSize="text-xl" />
         <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#FF7A00] shadow-lg shadow-orange-900/20 text-white">
           <span className="material-symbols-outlined font-bold">help</span>
         </button>
