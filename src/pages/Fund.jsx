@@ -6,7 +6,6 @@ import {
   getContributions,
   getTransactions,
   togglePaid,
-  addTransaction,
   addContribution,
   updateContribution,
   deleteContribution,
@@ -75,9 +74,7 @@ const MemberModal = ({ member, onClose, onSave }) => {
 };
 
 // ─── Modal: Transaction Detail ──────────────────────────────────────────────
-const TransactionDetailModal = ({ transaction, onClose, onDelete }) => {
-  const isAdmin = true; // Component only called when viewing, but we check role in parent
-
+const TransactionDetailModal = ({ transaction, onClose, onDelete, onEdit }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-sm rounded-[2rem] p-7 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
@@ -131,9 +128,12 @@ const TransactionDetailModal = ({ transaction, onClose, onDelete }) => {
           )}
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-2 pt-2">
           <button onClick={() => { if(window.confirm('Xóa giao dịch này?')) { onDelete(transaction.id); onClose(); } }} className="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl">
              <span className="material-symbols-outlined">delete</span>
+          </button>
+          <button onClick={() => onEdit(transaction.id)} className="w-12 h-12 flex items-center justify-center bg-[#FFF0E5] text-[#FF7A00] rounded-xl">
+             <span className="material-symbols-outlined">edit</span>
           </button>
           <button onClick={onClose} className="flex-1 py-3 bg-gradient-to-r from-[#FF7A00] to-[#C35A00] text-white rounded-xl font-bold text-sm shadow">Đóng</button>
         </div>
@@ -156,6 +156,10 @@ const Fund = () => {
   // Time filtering
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  // Bulk Selection
+  const [selectedMemberIds, setSelectedMemberIds] = useState(new Set());
+  const [selectedTxIds, setSelectedTxIds] = useState(new Set());
 
   // Modals
   const [editingMember, setEditingMember] = useState(null);
@@ -196,8 +200,8 @@ const Fund = () => {
       await updateContribution(id, data);
       setContributions(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } else {
-      const created = await addContribution(data);
-      fetchAll(); // Refresh to get the new ID and ordering
+      await addContribution(data);
+      fetchAll();
     }
   };
 
@@ -205,11 +209,63 @@ const Fund = () => {
     if (!window.confirm('Xóa thành viên này khỏi danh sách quỹ?')) return;
     await deleteContribution(id);
     setContributions(prev => prev.filter(c => c.id !== id));
+    setSelectedMemberIds(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
   };
 
   const handleDeleteTx = async (id) => {
     await deleteTransaction(id);
     setTransactions(prev => prev.filter(t => t.id !== id));
+    setSelectedTxIds(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  };
+
+  const handleBulkDeleteMembers = async () => {
+    if (!window.confirm(`Xóa ${selectedMemberIds.size} thành viên đã chọn?`)) return;
+    setLoading(true);
+    try {
+      await Promise.all(Array.from(selectedMemberIds).map(id => deleteContribution(id)));
+      setContributions(prev => prev.filter(c => !selectedMemberIds.has(c.id)));
+      setSelectedMemberIds(new Set());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkDeleteTransactions = async () => {
+    if (!window.confirm(`Xóa ${selectedTxIds.size} giao dịch đã chọn?`)) return;
+    setLoading(true);
+    try {
+      await Promise.all(Array.from(selectedTxIds).map(id => deleteTransaction(id)));
+      setTransactions(prev => prev.filter(t => !selectedTxIds.has(t.id)));
+      setSelectedTxIds(new Set());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleMemberSelection = (id) => {
+    setSelectedMemberIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleTxSelection = (id) => {
+    setSelectedTxIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   // ── Stats Calculation ──
@@ -271,7 +327,6 @@ const Fund = () => {
           </div>
         </div>
 
-        {/* Calculation Details Dropdown */}
         {showCalculationDetails && (
           <div className="mt-4 bg-white rounded-3xl p-6 shadow-sm border border-[#F2F0ED] animate-fade-in">
             <h4 className="font-headline font-bold text-lg text-[#1C1B1F] mb-4">Chi tiết bảng tính</h4>
@@ -297,7 +352,7 @@ const Fund = () => {
         )}
       </section>
 
-      {/* KPI Section with improved design */}
+      {/* KPI Section */}
       <section className="grid grid-cols-2 gap-4 mb-10">
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#F2F0ED]">
           <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3">
@@ -324,6 +379,11 @@ const Fund = () => {
           </div>
           {isAdmin && (
             <div className="flex gap-2">
+               {selectedMemberIds.size > 0 && (
+                 <button onClick={handleBulkDeleteMembers} className="h-9 px-4 flex items-center gap-1 bg-red-50 text-red-500 rounded-xl font-bold text-[10px] uppercase border border-red-100 animate-fade-in">
+                    <span className="material-symbols-outlined text-sm">delete</span> Xóa ({selectedMemberIds.size})
+                 </button>
+               )}
                <button onClick={handleSeed} className="text-[10px] font-bold text-[#8C7A6B] h-9 px-3 rounded-xl border border-[#F2F0ED] hover:bg-white transition-colors">Đồng bộ</button>
                <button onClick={() => setShowAddMember(true)} className="h-9 w-9 flex items-center justify-center bg-gradient-to-r from-[#FF7A00] to-[#C35A00] text-white rounded-xl shadow-md active:scale-90 transition">
                  <span className="material-symbols-outlined text-xl">add</span>
@@ -332,7 +392,6 @@ const Fund = () => {
           )}
         </div>
 
-        {/* Filter Tabs */}
         <div className="flex gap-2 bg-[#F2F0ED] p-1 rounded-2xl mb-4">
           {[['all', 'Tất cả'], ['paid', `Đã đóng (${paidCount})`], ['unpaid', `Chưa đóng (${unpaidCount})`]].map(([val, label]) => (
             <button
@@ -351,7 +410,12 @@ const Fund = () => {
               <p className="text-[#8C7A6B] font-medium text-sm">Chưa có dữ liệu thành viên.</p>
             </div>
           ) : filteredContributions.map(c => (
-            <div key={c.id} className="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-sm border border-[#F2F0ED] group">
+            <div key={c.id} className={`bg-white rounded-3xl p-4 flex items-center gap-3 shadow-sm border transition-all ${selectedMemberIds.has(c.id) ? 'border-[#FF7A00] bg-orange-50/30' : 'border-[#F2F0ED] hover:border-orange-100'} group`}>
+              {isAdmin && (
+                <button onClick={() => toggleMemberSelection(c.id)} className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${selectedMemberIds.has(c.id) ? 'bg-[#FF7A00] border-[#FF7A00]' : 'border-slate-300 bg-white'}`}>
+                  {selectedMemberIds.has(c.id) && <span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>}
+                </button>
+              )}
               <div className="w-12 h-12 rounded-2xl bg-[#F2F0ED] overflow-hidden flex items-center justify-center flex-shrink-0">
                 {c.photoURL ? <img src={c.photoURL} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-[#8C7A6B] text-2xl">person</span>}
               </div>
@@ -368,10 +432,10 @@ const Fund = () => {
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 {isAdmin && (
                   <>
-                    <button onClick={() => setEditingMember(c)} className="w-8 h-8 rounded-lg bg-[#FFF0E5] text-[#FF7A00] flex items-center justify-center">
+                    <button onClick={() => setEditingMember(c)} className="w-8 h-8 rounded-lg bg-[#FFF0E5] text-[#FF7A00] flex items-center justify-center translate-x-2 group-hover:translate-x-0 transition-transform">
                        <span className="material-symbols-outlined text-lg">edit</span>
                     </button>
-                    <button onClick={() => handleDeleteMember(c.id)} className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                    <button onClick={() => handleDeleteMember(c.id)} className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center translate-x-2 group-hover:translate-x-0 transition-transform">
                        <span className="material-symbols-outlined text-lg">delete</span>
                     </button>
                   </>
@@ -390,12 +454,18 @@ const Fund = () => {
         </div>
       </section>
 
-      {/* Transactions Section with filtering */}
+      {/* Transactions Section */}
       <section className="mb-12">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h3 className="font-headline font-bold text-2xl text-[#1C1B1F]">Lịch sử giao dịch</h3>
+          <div className="flex items-center gap-3">
+             <h3 className="font-headline font-bold text-2xl text-[#1C1B1F]">Lịch sử giao dịch</h3>
+             {isAdmin && selectedTxIds.size > 0 && (
+               <button onClick={handleBulkDeleteTransactions} className="h-8 px-3 flex items-center gap-1 bg-red-50 text-red-500 rounded-[12px] font-bold text-[9px] uppercase border border-red-100 animate-fade-in">
+                  <span className="material-symbols-outlined text-xs">delete</span> Xóa ({selectedTxIds.size})
+               </button>
+             )}
+          </div>
           
-          {/* Time Filter Controls */}
           <div className="flex items-center gap-2 bg-[#F2F0ED] p-1 rounded-[20px]">
             <select 
               value={selectedMonth} 
@@ -420,14 +490,24 @@ const Fund = () => {
           {timeFilteredTransactions.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-3xl border-2 border-dashed border-[#F2F0ED]">
               <span className="material-symbols-outlined text-4xl text-[#E6E0D8] mb-2 block">receipt_long</span>
-              <p className="text-[#8C7A6B] font-medium text-sm">Không tìm thấy giao dịch nào trong tháng {selectedMonth + 1}.</p>
+              <p className="text-[#8C7A6B] font-medium text-sm">Không tìm thấy giao dịch nào.</p>
             </div>
           ) : timeFilteredTransactions.map(tx => (
             <div 
               key={tx.id} 
-              onClick={() => setSelectedTx(tx)}
-              className="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-sm border border-[#F2F0ED] active:scale-[0.98] transition-all cursor-pointer hover:border-[#FF7A00]/20"
+              className={`bg-white rounded-3xl p-4 flex items-center gap-3 shadow-sm border transition-all ${selectedTxIds.has(tx.id) ? 'border-[#FF7A00] bg-orange-50/30' : 'border-[#F2F0ED] hover:border-orange-100'} cursor-pointer`}
+              onClick={(e) => {
+                if (isAdmin && e.target.closest('.checkbox-zone')) return;
+                setSelectedTx(tx);
+              }}
             >
+              {isAdmin && (
+                <div onClick={(e) => { e.stopPropagation(); toggleTxSelection(tx.id); }} className="checkbox-zone w-6 h-10 flex items-center">
+                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${selectedTxIds.has(tx.id) ? 'bg-[#FF7A00] border-[#FF7A00]' : 'border-slate-300 bg-white'}`}>
+                    {selectedTxIds.has(tx.id) && <span className="material-symbols-outlined text-white text-[14px] font-bold">check</span>}
+                  </div>
+                </div>
+              )}
               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${tx.type === 'income' ? 'bg-green-50' : 'bg-red-50'}`}>
                 <span className={`material-symbols-outlined text-[20px] ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
                   {tx.type === 'income' ? 'payments' : 'shopping_bag'}
@@ -450,7 +530,6 @@ const Fund = () => {
         </div>
       </section>
 
-      {/* FAB: Add Transaction */}
       {isAdmin && (
         <button
           onClick={() => navigate('/fund/add')}
@@ -460,7 +539,6 @@ const Fund = () => {
         </button>
       )}
 
-      {/* Modals */}
       {(showAddMember || editingMember) && (
         <MemberModal 
           member={editingMember} 
@@ -474,6 +552,7 @@ const Fund = () => {
           transaction={selectedTx} 
           onClose={() => setSelectedTx(null)}
           onDelete={handleDeleteTx}
+          onEdit={(id) => navigate(`/fund/edit/${id}`)}
         />
       )}
     </main>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { addTransaction } from '../services/fundService';
+import { useNavigate, useParams } from 'react-router-dom';
+import { addTransaction, getTransaction, updateTransaction } from '../services/fundService';
 import { useAuth } from '../contexts/AuthContext';
 
 const CATEGORIES = {
@@ -16,6 +16,8 @@ const formatAmount = (val) => {
 };
 
 const AddTransaction = () => {
+  const { id } = useParams();
+  const isEdit = !!id;
   const navigate = useNavigate();
   const { userData } = useAuth();
   const fileRef = useRef(null);
@@ -34,6 +36,24 @@ const AddTransaction = () => {
   const [notes, setNotes] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Fetch data if editing
+  useEffect(() => {
+    if (isEdit) {
+      const fetchTx = async () => {
+        const tx = await getTransaction(id);
+        if (tx) {
+          setType(tx.type);
+          setRawAmount(tx.amount.toString());
+          setCategory(tx.category);
+          setDate(tx.date || tx.createdAt.split('T')[0]);
+          setNotes(tx.notes || '');
+          setImagePreview(tx.imagePreview || null);
+        }
+      };
+      fetchTx();
+    }
+  }, [id, isEdit]);
 
   const handleTypeSwitch = (t) => {
     setType(t);
@@ -61,7 +81,7 @@ const AddTransaction = () => {
     }
     setSaving(true);
     try {
-      await addTransaction({
+      const data = {
         type,
         description: category + (notes ? ` – ${notes}` : ''),
         category,
@@ -69,7 +89,13 @@ const AddTransaction = () => {
         amount: parseInt(rawAmount, 10),
         date,
         imagePreview: imagePreview || null,
-      });
+      };
+
+      if (isEdit) {
+        await updateTransaction(id, data);
+      } else {
+        await addTransaction(data);
+      }
       navigate('/fund');
     } catch (err) {
       alert('Lỗi: ' + err.message);
@@ -88,7 +114,7 @@ const AddTransaction = () => {
         <button onClick={() => navigate('/fund')} className="w-9 h-9 flex items-center justify-center text-[#C35A00] active:scale-90 transition">
           <span className="material-symbols-outlined text-2xl">arrow_back</span>
         </button>
-        <h1 className="font-headline font-bold text-lg text-[#1C1B1F]">Tạo giao dịch</h1>
+        <h1 className="font-headline font-bold text-lg text-[#1C1B1F]">{isEdit ? 'Chỉnh sửa giao dịch' : 'Tạo giao dịch'}</h1>
         <button onClick={() => navigate('/fund')} className="w-9 h-9 flex items-center justify-center text-[#8C7A6B]">
           <span className="material-symbols-outlined text-xl">history</span>
         </button>

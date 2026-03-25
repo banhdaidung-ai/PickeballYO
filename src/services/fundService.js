@@ -75,6 +75,19 @@ export const deleteContribution = async (id) => {
   await deleteDoc(doc(db, CONTRIBUTIONS_COL, id));
 };
 
+/** Fetch a single transaction by ID */
+export const getTransaction = async (id) => {
+  const snap = await getDocs(query(collection(db, TRANSACTIONS_COL))); // fallback if doc() doesn't work directly with id
+  // more efficient:
+  const d = await getDocs(query(collection(db, TRANSACTIONS_COL)));
+  return d.docs.find(doc => doc.id === id)?.data();
+};
+
+/** Update an existing transaction */
+export const updateTransaction = async (id, data) => {
+  await updateDoc(doc(db, TRANSACTIONS_COL, id), data);
+};
+
 /** Delete a transaction */
 export const deleteTransaction = async (id) => {
   await deleteDoc(doc(db, TRANSACTIONS_COL, id));

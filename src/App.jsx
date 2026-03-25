@@ -37,6 +37,7 @@ function App() {
         </Route>
         <Route path="/session/:id" element={<SessionDetails />} />
         <Route path="/fund/add" element={<AddTransaction />} />
+        <Route path="/fund/edit/:id" element={<AddTransaction />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
       </Routes>
