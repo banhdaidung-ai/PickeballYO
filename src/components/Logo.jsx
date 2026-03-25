@@ -3,7 +3,7 @@ import React from 'react';
 const Logo = ({ iconClassName = "w-10 h-10", textColor = "text-[#FF7A00]", showText = false, fontSize = "text-xl", iconOnly = false }) => {
   return (
     <div className="flex items-center gap-3">
-      <div className={iconClassName}>
+      <div className={`flex-shrink-0 ${iconClassName}`}>
         <svg 
           viewBox="0 0 100 100" 
           className="w-full h-full"
