@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subscribeToSchedule, getSchedule } from '../services/dataService';
-import { useAuth } from '../contexts/AuthContext';
 import { getAllUsers } from '../services/authService';
+import { subscribeToNews } from '../services/newsService';
 import ParticipantModal from '../components/ParticipantModal';
 
 const WEEKDAY_LABELS = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
@@ -17,6 +17,19 @@ const Dashboard = () => {
   // Leaderboard data
   const [topUsers, setTopUsers] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+
+  // News data
+  const [latestNews, setLatestNews] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribeNews = subscribeToNews((data) => {
+      setLatestNews(data.slice(0, 3)); // Only show top 3
+      setNewsLoading(false);
+    }, false);
+    
+    return () => unsubscribeNews();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeToSchedule((data) => {
@@ -253,6 +266,64 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Latest News Section */}
+        <section className="pb-12 border-t border-slate-100 pt-10">
+          <div className="flex justify-between items-center mb-6 px-1">
+            <div>
+              <span className="font-label text-xs font-bold text-primary uppercase tracking-widest block mb-1">Cập nhật</span>
+              <h3 className="font-headline font-black text-2xl text-on-surface tracking-tight">Tin tức mới nhất</h3>
+            </div>
+            <button 
+              onClick={() => navigate('/news')}
+              className="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl font-label text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container hover:text-primary transition-all shadow-sm active:scale-95"
+            >
+              Tất cả
+            </button>
+          </div>
+          
+          {newsLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : latestNews.length === 0 ? (
+            <div className="text-center py-10 bg-surface-container-low rounded-3xl">
+              <p className="text-secondary text-sm font-medium">Chưa có tin tức mới.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {latestNews.map((item) => (
+                <div 
+                  key={item.id} 
+                  onClick={() => navigate(`/news/${item.id}`)}
+                  className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100 cursor-pointer group"
+                >
+                  <div className="h-40 relative">
+                    <img src={item.imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[9px] font-bold text-primary uppercase tracking-wider shadow-sm">
+                      {item.category || 'Thông báo'}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <h4 className="font-headline font-bold text-on-surface group-hover:text-primary transition-colors line-clamp-2 leading-snug mb-2">
+                       {item.title}
+                    </h4>
+                    <p className="text-on-surface-variant text-[11px] font-medium line-clamp-2 mb-4 leading-relaxed">
+                      {item.summary || item.content?.substring(0, 80) + '...'}
+                    </p>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                       <span className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">
+                         {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('vi-VN') : ''}
+                       </span>
+                       <span className="material-symbols-outlined text-sm text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 

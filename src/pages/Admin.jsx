@@ -364,6 +364,7 @@ const Admin = () => {
     { id: 'users', icon: 'manage_accounts', label: 'Thành viên' },
     { id: 'schedule', icon: 'edit_calendar', label: 'Lịch tập' },
     { id: 'fund', icon: 'account_balance_wallet', label: 'Chi tiêu' },
+    { id: 'news', icon: 'newspaper', label: 'Tin tức' },
   ];
 
   return (
@@ -555,6 +556,44 @@ const Admin = () => {
               ))}
             </div>
           )}
+        </section>
+      )}
+
+      {/* ═══ TAB: NEWS ═══ */}
+      {activeTab === 'news' && (
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-headline font-bold text-xl text-[#1C1B1F]">Quản lý tin tức</h3>
+          </div>
+          
+          <div 
+            onClick={() => navigate('/admin/news')}
+            className="group bg-white rounded-[2rem] p-8 border border-[#F2F0ED] shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center gap-4 py-12"
+          >
+            <div className="w-20 h-20 rounded-[2rem] bg-[#FFF0E5] text-[#FF7A00] flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+              <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>newspaper</span>
+            </div>
+            <div>
+              <h4 className="font-headline font-black text-2xl text-[#1C1B1F] mb-2 tracking-tight">Cổng biên tập tin tức</h4>
+              <p className="text-[#8C7A6B] text-sm font-medium max-w-xs mx-auto mb-6">Đăng thông báo, cập nhật sự kiện và chia sẻ kiến thức kỹ thuật cho câu lạc bộ.</p>
+              
+              <div className="inline-flex items-center gap-2 px-8 py-4 velocity-gradient text-white rounded-2xl font-headline font-black uppercase tracking-tight shadow-xl shadow-orange-900/20 active:scale-95 transition-all">
+                Truy cập ngay
+                <span className="material-symbols-outlined">arrow_forward</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-2 gap-4">
+             <div className="bg-[#FFF8F3] p-5 rounded-2xl border border-orange-100 flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#FF7A00]">edit_note</span>
+                <span className="text-[11px] font-bold font-label text-[#8C7A6B] uppercase tracking-wider">Soạn bài mới</span>
+             </div>
+             <div className="bg-[#FFF8F3] p-5 rounded-2xl border border-orange-100 flex items-center gap-3">
+                <span className="material-symbols-outlined text-[#FF7A00]">visibility</span>
+                <span className="text-[11px] font-bold font-label text-[#8C7A6B] uppercase tracking-wider">Xem bảng tin</span>
+             </div>
+          </div>
         </section>
       )}
 

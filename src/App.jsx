@@ -15,6 +15,11 @@ import Login from './pages/Login';
 import Leaderboard from './pages/Leaderboard';
 import Admin from './pages/Admin';
 
+import AdminNews from './pages/AdminNews';
+import NewsEditor from './pages/NewsEditor';
+import NewsList from './pages/NewsList';
+import NewsDetail from './pages/NewsDetail';
+
 function App() {
   const { user, loading } = useAuth();
 
@@ -34,7 +39,12 @@ function App() {
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="news" element={<NewsList />} />
+          <Route path="admin/news" element={<AdminNews />} />
         </Route>
+        <Route path="/news/:id" element={<NewsDetail />} />
+        <Route path="/admin/news/new" element={<NewsEditor />} />
+        <Route path="/admin/news/edit/:id" element={<NewsEditor />} />
         <Route path="/session/:id" element={<SessionDetails />} />
         <Route path="/fund/add" element={<AddTransaction />} />
         <Route path="/fund/edit/:id" element={<AddTransaction />} />
