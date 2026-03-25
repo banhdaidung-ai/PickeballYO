@@ -270,7 +270,8 @@ const Fund = () => {
 
   // ── Stats Calculation ──
   const totalContributions = contributions.filter(c => c.paid).reduce((s, c) => s + (c.amount || 0), 0);
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+  // Do not count "Thành viên đóng quỹ" here because it is already in totalContributions
+  const totalIncome = transactions.filter(t => t.type === 'income' && t.category !== 'Thành viên đóng quỹ').reduce((s, t) => s + (t.amount || 0), 0);
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
   const balance = totalContributions + totalIncome - totalExpense;
 

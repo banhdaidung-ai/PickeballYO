@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addTransaction, getTransaction, updateTransaction } from '../services/fundService';
+import { addTransaction, getTransaction, updateTransaction, getContributions, togglePaid } from '../services/fundService';
 import { useAuth } from '../contexts/AuthContext';
 
 const CATEGORIES = {
@@ -37,10 +37,17 @@ const AddTransaction = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // Fetch data if editing
+  // Member Sync
+  const [memberList, setMemberList] = useState([]);
+  const [selectedMemberId, setSelectedMemberId] = useState('');
+
+  // Fetch data if editing OR fetch members for sync
   useEffect(() => {
-    if (isEdit) {
-      const fetchTx = async () => {
+    const init = async () => {
+      const members = await getContributions();
+      setMemberList(members);
+
+      if (isEdit) {
         const tx = await getTransaction(id);
         if (tx) {
           setType(tx.type);
@@ -49,15 +56,30 @@ const AddTransaction = () => {
           setDate(tx.date || tx.createdAt.split('T')[0]);
           setNotes(tx.notes || '');
           setImagePreview(tx.imagePreview || null);
+          if (tx.memberId) setSelectedMemberId(tx.memberId);
         }
-      };
-      fetchTx();
-    }
+      }
+    };
+    init();
   }, [id, isEdit]);
 
   const handleTypeSwitch = (t) => {
     setType(t);
     setCategory(CATEGORIES[t][0]);
+    if (t === 'expense') setSelectedMemberId('');
+  };
+
+  const handleCategoryChange = (val) => {
+    setCategory(val);
+    if (val !== 'Thành viên đóng quỹ') setSelectedMemberId('');
+  };
+
+  const handleMemberSelect = (mId) => {
+    setSelectedMemberId(mId);
+    if (mId) {
+      const m = memberList.find(i => i.id === mId);
+      if (m && !rawAmount) setRawAmount(m.amount.toString());
+    }
   };
 
   const handleAmountInput = (e) => {
@@ -89,12 +111,20 @@ const AddTransaction = () => {
         amount: parseInt(rawAmount, 10),
         date,
         imagePreview: imagePreview || null,
+        memberId: selectedMemberId || null,
       };
 
       if (isEdit) {
         await updateTransaction(id, data);
       } else {
         await addTransaction(data);
+        // Sync Member Paid Status
+        if (type === 'income' && category === 'Thành viên đóng quỹ' && selectedMemberId) {
+             const m = memberList.find(i => i.id === selectedMemberId);
+             if (m && !m.paid) {
+               await togglePaid(selectedMemberId, false); // false = current, will be toggled to true
+             }
+        }
       }
       navigate('/fund');
     } catch (err) {
@@ -167,16 +197,41 @@ const AddTransaction = () => {
           <div className="relative">
             <select
               value={category}
-              onChange={e => setCategory(e.target.value)}
+              onChange={e => handleCategoryChange(e.target.value)}
               className="w-full font-body font-semibold text-[#1C1B1F] bg-transparent outline-none appearance-none text-base py-1 pr-6"
             >
-              {CATEGORIES[type].map(c => (
+              {CATEGORIES[isIncome ? 'income' : 'expense'].map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
             <span className="material-symbols-outlined absolute right-0 top-1.5 text-[#C35A00] text-lg pointer-events-none">expand_more</span>
           </div>
         </div>
+
+        {/* Member Selection for Contribution */}
+        {isIncome && category === 'Thành viên đóng quỹ' && (
+          <div className="bg-white rounded-2xl px-5 py-4 shadow-sm border-2 border-[#FF7A00]/20 animate-fade-in">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-[#FF7A00] text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+              <span className="font-label text-xs font-bold text-[#8C7A6B] uppercase tracking-widest">Chọn thành viên đóng quỹ</span>
+            </div>
+            <div className="relative">
+              <select
+                value={selectedMemberId}
+                onChange={e => handleMemberSelect(e.target.value)}
+                className="w-full font-body font-semibold text-[#1C1B1F] bg-transparent outline-none appearance-none text-base py-1 pr-6"
+              >
+                <option value="">-- Chọn thành viên --</option>
+                {memberList.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.fullName} {m.paid ? '(Đã đóng)' : '(Chưa đóng)'}
+                  </option>
+                ))}
+              </select>
+              <span className="material-symbols-outlined absolute right-0 top-1.5 text-[#FF7A00] text-lg pointer-events-none">expand_more</span>
+            </div>
+          </div>
+        )}
 
         {/* Date */}
         <div className="bg-white rounded-2xl px-5 py-4 shadow-sm">
