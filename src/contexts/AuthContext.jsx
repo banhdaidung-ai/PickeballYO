@@ -32,14 +32,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       if (firebaseUser) {
         setUser(firebaseUser);
-        const data = await getUserData(firebaseUser.uid);
-        if (data) {
-          setUserData(data);
-        } else {
-          // Fallback in case auth changes before redirect logic finishes syncing
-          const newData = await ensureUserDocument(firebaseUser);
-          setUserData(newData);
-        }
+        // ensureUserDocument handles role upgrades (e.g. auto-admin for banhdaidung@gmail.com)
+        const data = await ensureUserDocument(firebaseUser);
+        setUserData(data);
       } else {
         setUser(null);
         setUserData(null);

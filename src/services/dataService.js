@@ -1,4 +1,4 @@
-import { collection, query, getDocs, addDoc, updateDoc, doc, onSnapshot, orderBy } from "firebase/firestore";
+import { collection, query, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "../firebase";
 
 const COLLECTION_NAME = "schedule";
@@ -44,4 +44,34 @@ export const subscribeToSession = (id, callback) => {
       callback({ id: doc.id, ...doc.data() });
     }
   });
+};
+
+export const addSession = async (sessionData) => {
+  try {
+    const docRef = await addDoc(collection(db, COLLECTION_NAME), sessionData);
+    return { id: docRef.id, ...sessionData };
+  } catch (error) {
+    console.error("Error adding session:", error);
+    throw error;
+  }
+};
+
+export const updateSession = async (id, sessionData) => {
+  try {
+    const docRef = doc(db, COLLECTION_NAME, id);
+    await updateDoc(docRef, sessionData);
+  } catch (error) {
+    console.error("Error updating session:", error);
+    throw error;
+  }
+};
+
+export const deleteSession = async (id) => {
+  try {
+    const docRef = doc(db, COLLECTION_NAME, id);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error("Error deleting session:", error);
+    throw error;
+  }
 };

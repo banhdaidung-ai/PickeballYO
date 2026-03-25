@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, updateDoc, doc, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
 const CONTRIBUTIONS_COL = "fund_contributions";
@@ -63,4 +63,9 @@ export const seedContributionsFromUsers = async (users) => {
       });
     }
   }
+};
+
+/** Delete a transaction */
+export const deleteTransaction = async (id) => {
+  await deleteDoc(doc(db, TRANSACTIONS_COL, id));
 };

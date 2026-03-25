@@ -14,7 +14,8 @@ import {
 const VND = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 
 const Fund = () => {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
+  const isAdmin = userData?.role === 'admin';
   const navigate = useNavigate();
   const [contributions, setContributions] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -218,13 +219,14 @@ const Fund = () => {
         </div>
       </section>
 
-      {/* Add Transaction FAB */}
-      <button
-        onClick={() => navigate('/fund/add')}
-        className="fixed bottom-28 right-5 w-14 h-14 velocity-gradient rounded-full flex items-center justify-center shadow-xl shadow-orange-900/30 z-40 active:scale-90 transition-transform"
-      >
-        <span className="material-symbols-outlined text-white text-3xl font-thin">add</span>
-      </button>
+      {isAdmin && (
+        <button
+          onClick={() => navigate('/fund/add')}
+          className="fixed bottom-28 right-5 w-14 h-14 velocity-gradient rounded-full flex items-center justify-center shadow-xl shadow-orange-900/30 z-40 active:scale-90 transition-transform"
+        >
+          <span className="material-symbols-outlined text-white text-3xl font-thin">add</span>
+        </button>
+      )}
 
       {/* Add Transaction Modal */}
     </main>

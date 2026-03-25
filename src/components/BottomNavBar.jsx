@@ -3,7 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const BottomNavBar = () => {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
+  const isAdmin = userData?.role === 'admin';
   
   const getNavClass = ({ isActive }) => {
     return `flex flex-col items-center justify-center px-4 py-1.5 transition-all ${
@@ -74,6 +75,16 @@ const BottomNavBar = () => {
             <>
               <span className="material-symbols-outlined" style={getIconStyle({isActive})}>login</span>
               <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Đăng nhập</span>
+            </>
+          )}
+        </NavLink>
+      )}
+      {isAdmin && (
+        <NavLink to="/admin" className={getNavClass}>
+          {({ isActive }) => (
+            <>
+              <span className="material-symbols-outlined" style={getIconStyle({isActive})}>admin_panel_settings</span>
+              <span className="text-[10px] font-semibold font-label tracking-wide uppercase mt-1">Admin</span>
             </>
           )}
         </NavLink>

@@ -13,6 +13,7 @@ import SessionDetails from './pages/SessionDetails';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import Leaderboard from './pages/Leaderboard';
+import Admin from './pages/Admin';
 
 function App() {
   const { user, loading } = useAuth();
@@ -32,6 +33,7 @@ function App() {
           <Route path="members" element={<Members />} />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="admin" element={<Admin />} />
         </Route>
         <Route path="/session/:id" element={<SessionDetails />} />
         <Route path="/fund/add" element={<AddTransaction />} />

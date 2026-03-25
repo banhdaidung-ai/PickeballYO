@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addTransaction } from '../services/fundService';
+import { useAuth } from '../contexts/AuthContext';
 
 const CATEGORIES = {
   income: ['Thành viên đóng quỹ', 'Thu phí sân', 'Tài trợ', 'Thu phí giải đấu', 'Thu khác'],
@@ -16,7 +17,15 @@ const formatAmount = (val) => {
 
 const AddTransaction = () => {
   const navigate = useNavigate();
+  const { userData } = useAuth();
   const fileRef = useRef(null);
+
+  // Guard: only admins can add transactions
+  useEffect(() => {
+    if (userData && userData.role !== 'admin') {
+      navigate('/fund', { replace: true });
+    }
+  }, [userData, navigate]);
 
   const [type, setType] = useState('income'); // income | expense
   const [rawAmount, setRawAmount] = useState('');

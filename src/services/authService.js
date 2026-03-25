@@ -10,7 +10,7 @@ import {
   getRedirectResult,
   updatePassword
 } from "firebase/auth";
-import { doc, setDoc, getDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, getDocs, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 const USERS_COLLECTION = "users";
@@ -56,17 +56,25 @@ export const ensureUserDocument = async (user) => {
     const userDoc = await getDoc(userRef);
     
     if (!userDoc.exists()) {
+      const isAdmin = user.email === 'banhdaidung@gmail.com';
       const userData = {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName || '',
         photoURL: user.photoURL || '',
+        role: isAdmin ? 'admin' : 'member',
         createdAt: new Date().toISOString()
       };
       await setDoc(userRef, userData);
       return userData;
     }
-    return userDoc.data();
+    // Ensure admin email always has admin role
+    const existingData = userDoc.data();
+    if (user.email === 'banhdaidung@gmail.com' && existingData.role !== 'admin') {
+      await updateDoc(userRef, { role: 'admin' });
+      return { ...existingData, role: 'admin' };
+    }
+    return existingData;
   } catch (error) {
     console.error("Error ensuring user document:", error);
     throw error;
@@ -195,6 +203,26 @@ export const getAllUsers = async () => {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Error getting all users:", error);
+    throw error;
+  }
+};
+
+export const updateUserRole = async (uid, role) => {
+  try {
+    const userRef = doc(db, USERS_COLLECTION, uid);
+    await updateDoc(userRef, { role });
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    throw error;
+  }
+};
+
+export const deleteUserDoc = async (uid) => {
+  try {
+    const userRef = doc(db, USERS_COLLECTION, uid);
+    await deleteDoc(userRef);
+  } catch (error) {
+    console.error("Error deleting user document:", error);
     throw error;
   }
 };
