@@ -103,9 +103,9 @@ const Members = () => {
             />
           </div>
           
-          <button className="flex items-center justify-center gap-2 w-full py-3.5 bg-white rounded-2xl shadow-sm border border-[#E6E0D8] active:scale-[0.98] transition-all">
-            <span className="material-symbols-outlined text-[#1C1B1F] text-[18px]">filter_list</span>
-            <span className="font-label text-sm font-bold text-[#1C1B1F]">Bộ lọc</span>
+          <button onClick={() => window.location.hash = '#/leaderboard'} className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-[#FF7A00] to-[#E55A00] rounded-2xl shadow-sm shadow-[#FF7A00]/20 text-white active:scale-[0.98] transition-all">
+            <span className="material-symbols-outlined text-[18px]">leaderboard</span>
+            <span className="font-label text-sm font-bold uppercase tracking-widest">Xếp hạng chăm chỉ</span>
           </button>
         </div>
 
