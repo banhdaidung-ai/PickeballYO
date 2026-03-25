@@ -6,6 +6,8 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   updatePassword
 } from "firebase/auth";
 import { doc, setDoc, getDoc, collection, getDocs, updateDoc } from "firebase/firestore";
@@ -41,21 +43,49 @@ export const updateUserPassword = async (newPassword) => {
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
-export const signInWithGoogle = async () => {
+export { auth }; // Export auth for getRedirectResult in context
+
+/**
+ * Ensures a user document exists in Firestore and stays in sync with auth data.
+ */
+export const ensureUserDocument = async (user) => {
+  if (!user) return null;
+  
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-    const userDoc = await getDoc(doc(db, USERS_COLLECTION, user.uid));
+    const userRef = doc(db, USERS_COLLECTION, user.uid);
+    const userDoc = await getDoc(userRef);
+    
     if (!userDoc.exists()) {
-      await setDoc(doc(db, USERS_COLLECTION, user.uid), {
+      const userData = {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName || '',
         photoURL: user.photoURL || '',
         createdAt: new Date().toISOString()
-      });
+      };
+      await setDoc(userRef, userData);
+      return userData;
     }
-    return user;
+    return userDoc.data();
+  } catch (error) {
+    console.error("Error ensuring user document:", error);
+    throw error;
+  }
+};
+
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+export const signInWithGoogle = async () => {
+  try {
+    if (isMobile()) {
+      await signInWithRedirect(auth, googleProvider);
+      return; // Page will redirect
+    }
+    const result = await signInWithPopup(auth, googleProvider);
+    await ensureUserDocument(result.user);
+    return result.user;
   } catch (error) {
     console.error("Error signing in with Google:", error);
     throw error;
@@ -64,19 +94,13 @@ export const signInWithGoogle = async () => {
 
 export const signInWithFacebook = async () => {
   try {
-    const result = await signInWithPopup(auth, facebookProvider);
-    const user = result.user;
-    const userDoc = await getDoc(doc(db, USERS_COLLECTION, user.uid));
-    if (!userDoc.exists()) {
-      await setDoc(doc(db, USERS_COLLECTION, user.uid), {
-        uid: user.uid,
-        email: user.email,
-        fullName: user.displayName || '',
-        photoURL: user.photoURL || '',
-        createdAt: new Date().toISOString()
-      });
+    if (isMobile()) {
+      await signInWithRedirect(auth, facebookProvider);
+      return; // Page will redirect
     }
-    return user;
+    const result = await signInWithPopup(auth, facebookProvider);
+    await ensureUserDocument(result.user);
+    return result.user;
   } catch (error) {
     console.error("Error signing in with Facebook:", error);
     throw error;
