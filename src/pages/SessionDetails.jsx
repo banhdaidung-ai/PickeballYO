@@ -13,6 +13,7 @@ const SessionDetails = () => {
   const [booking, setBooking] = useState(false);
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   useEffect(() => {
     const unsubscribe = subscribeToSession(id, (data) => {
@@ -41,17 +42,22 @@ const SessionDetails = () => {
   };
 
   const handleCancel = async () => {
-    // Keep confirm modal open but show loading state
+    if (!user?.uid) {
+      setModalError("Vui lòng đăng nhập lại để thực hiện.");
+      return;
+    }
+    
+    setModalError('');
     setBooking(true);
     try {
+      console.log(`[handleCancel] User ${user.uid} cancelling session ${id}`);
       await cancelBooking(id, user.uid);
-      setShowConfirm(false); // Only close after success
+      setShowConfirm(false);
       setCancelSuccess(true);
-      // Auto-hide success message after 3 seconds
       setTimeout(() => setCancelSuccess(false), 3000);
     } catch (error) {
-      console.error("Cancel failed:", error);
-      alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+      console.error("[handleCancel] Failed:", error);
+      setModalError(error.message || "Đã có lỗi xảy ra. Thử lại.");
     } finally {
       setBooking(false);
     }
@@ -88,6 +94,13 @@ const SessionDetails = () => {
               <p className="text-[#4A2C2A]/70 font-medium text-sm">
                 Bạn có chắc chắn muốn hủy tham gia buổi tập này không?
               </p>
+              {modalError && (
+                <div className="mt-2 p-3 bg-red-50 rounded-xl">
+                  <p className="text-xs font-bold text-red-600 leading-tight">
+                    {modalError}
+                  </p>
+                </div>
+              )}
             </div>
             <div className="flex gap-3">
               <button 
