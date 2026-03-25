@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subscribeToSchedule, getSchedule } from '../services/dataService';
+import { useAuth } from '../contexts/AuthContext';
 import { getAllUsers } from '../services/authService';
 import { subscribeToNews } from '../services/newsService';
 import ParticipantModal from '../components/ParticipantModal';
