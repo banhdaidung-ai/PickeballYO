@@ -166,7 +166,7 @@ const SessionDetails = () => {
           <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center border-2 border-primary-container">
             <span className="text-primary font-black text-lg font-headline leading-none">Y</span>
           </div>
-          <span className="text-xl font-black italic text-orange-600 dark:text-orange-400 tracking-tight font-headline uppercase">CLB Pickleball YODY</span>
+          <span className="text-xl font-black italic text-orange-600 dark:text-orange-400 tracking-tight font-headline uppercase">YODY Pickleball Club</span>
         </div>
         <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border-2 border-primary-container">
           <img className="w-full h-full object-cover" alt="User profile" src={user?.photoURL || "https://lh3.googleusercontent.com/aida-public/AB6AXuAnKA1RmjFvYnMEzjttpJ2pGlM4QzXFgMLEuaNn729YytQS2C0vmfwxShnjeyGJOaw7spJH7YdXGr7ufHtvaZnDqm2W1elLE9HRI16ZbCfotNBZ3gnWKLLaZUDLmGn76Gsq9EeVctEXmbRqIQkcDzRPadW8QH3vZIa1tpjOA-rYzIBwVsWYtk6o5_u_k6K21NR1PJ_NwasUJC760gvPPOyUZelXfpJs5os58He9aUpSSCnMUkvU8kmS7KcWgY_B9suxuelRcGHhLqc"}/>

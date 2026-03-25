@@ -90,7 +90,7 @@ const Login = () => {
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-10">
           <span className="material-symbols-outlined text-[#FF7A00] text-3xl font-black" style={{ fontVariationSettings: "'FILL' 1" }}>sports_tennis</span>
-          <span className="text-[#FF7A00] font-headline font-black italic tracking-tight text-xl uppercase">Pickleball Club</span>
+          <span className="text-[#FF7A00] font-headline font-black italic tracking-tight text-xl uppercase">YODY Pickleball Club</span>
         </div>
 
         {/* Header */}

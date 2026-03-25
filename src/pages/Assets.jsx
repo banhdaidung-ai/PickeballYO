@@ -7,7 +7,7 @@ const Assets = () => {
         <div className="flex-1">
           <p className="font-label text-primary font-semibold uppercase tracking-widest text-sm mb-2">Trải nghiệm đỉnh cao</p>
           <h2 className="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-4 leading-tight">Sẵn sàng cho trận đấu tiếp theo?</h2>
-          <p className="text-on-surface-variant max-w-md">Đặt sân Pickleball tiêu chuẩn quốc tế tại CLB PickeBall YODY ngay hôm nay.</p>
+          <p className="text-on-surface-variant max-w-md">Đặt sân Pickleball tiêu chuẩn quốc tế tại YODY Pickleball Club ngay hôm nay.</p>
         </div>
         <div className="relative w-full md:w-1/2 aspect-video rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
           <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDmT1O1alfcFtah2fSyqjIGBHpkMk5826jfYUhnqdEu5tR1G9nmlFSfjGbUoM_dkbrjd-z2tUg-bddSBlCsTl7Lmr0KrCMwldgoNcv3k4w6yQoaz-ONxeMZOJSv-VgHwhlzkJmBSY6utbd1vqH_0Bs853dHLD-tUux-YMFRBZ4fp0kXPw4RqM1RdWWWz_t91U3i9Fl3dUopbdErWsWeiu6sTsnCqawk2DXkA5yWV9WCndAQlTYXgMLqqmg6_E8lIAfYE_KvbQQ_iA" />
