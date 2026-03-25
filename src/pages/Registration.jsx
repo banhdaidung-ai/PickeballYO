@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUp } from '../services/authService';
+import Logo from '../components/Logo';
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -111,7 +112,7 @@ const Registration = () => {
         >
           <span className="material-symbols-outlined font-bold">arrow_back</span>
         </button>
-        <h1 className="text-xl font-black italic tracking-tighter text-[#4A2C2A] font-headline uppercase">CLUB JOIN</h1>
+        <Logo className="w-8 h-8" showText={true} fontSize="text-xl" />
         <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#FF7A00] shadow-lg shadow-orange-900/20 text-white">
           <span className="material-symbols-outlined font-bold">help</span>
         </button>

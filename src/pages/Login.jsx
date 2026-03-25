@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signIn, signInWithGoogle, signInWithFacebook, isInAppBrowser, signInWithGoogleRedirect, signInWithFacebookRedirect } from '../services/authService';
+import Logo from '../components/Logo';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -88,9 +89,8 @@ const Login = () => {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FF7A00]/5 rounded-full blur-[80px] -z-10"></div>
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <span className="material-symbols-outlined text-[#FF7A00] text-3xl font-black" style={{ fontVariationSettings: "'FILL' 1" }}>sports_tennis</span>
-          <span className="text-[#FF7A00] font-headline font-black italic tracking-tight text-xl uppercase">YODY Pickleball Club</span>
+        <div className="flex justify-center mb-10">
+          <Logo className="w-12 h-12" fontSize="text-2xl" showText={true} />
         </div>
 
         {/* Header */}
