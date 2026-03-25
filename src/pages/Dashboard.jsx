@@ -67,7 +67,21 @@ const Dashboard = () => {
                     <span className="text-xl font-headline font-extrabold leading-none">{todayDateObj.getDate()}</span>
                   </div>
                   <div>
-                    <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-headline text-lg font-bold text-on-surface line-clamp-1">{todaySession.courtName || 'Sân trống'}</h3>
+                      {todaySession.locationUrl && (
+                        <a 
+                          href={todaySession.locationUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          title="Xem bản đồ"
+                        >
+                          <span className="material-symbols-outlined text-base">location_on</span>
+                        </a>
+                      )}
+                    </div>
                     <p className="font-label text-sm text-secondary flex items-center gap-1 mt-1">
                       <span className="material-symbols-outlined text-base">schedule</span> {todaySession.startTime || '00:00'} - {todaySession.timeRange?.split('-')[1]?.trim() || 'Hết giờ'}
                     </p>

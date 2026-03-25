@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getAllUsers, updateUserRole, deleteUserDoc, updateUserProfile } from '../services/authService';
 import { subscribeToSchedule, addSession, updateSession, deleteSession } from '../services/dataService';
 import { getTransactions, deleteTransaction } from '../services/fundService';
+import { resetAndSeed } from '../services/seedService';
 
 const VND = (n) => new Intl.NumberFormat('vi-VN').format(n) + 'đ';
 
@@ -19,6 +20,7 @@ const DAYS = [
 
 const emptySession = {
   courtName: '',
+  locationUrl: '',
   dayIndex: 1,
   dayLabel: 'Thứ Hai',
   startTime: '08:00',
@@ -184,6 +186,12 @@ const SessionModal = ({ session, onClose, onSave }) => {
               placeholder="VD: Sân Pickleball"
               className="w-full px-4 py-3 bg-[#F2F0ED] rounded-xl font-medium text-sm text-[#1C1B1F] outline-none" />
           </div>
+          <div>
+            <label className="text-[10px] font-black text-[#8C7A6B] uppercase tracking-widest block mb-1">Địa chỉ Google Maps</label>
+            <input value={form.locationUrl || ''} onChange={e => set('locationUrl', e.target.value)}
+              placeholder="https://maps.app.goo.gl/..."
+              className="w-full px-4 py-3 bg-[#F2F0ED] rounded-xl font-medium text-sm text-[#1C1B1F] outline-none focus:ring-2 focus:ring-[#FF7A00]/30" />
+          </div>
           <div className="flex items-center justify-between py-2">
             <span className="font-medium text-sm text-[#1C1B1F]">Đang diễn ra (Live)</span>
             <button
@@ -232,6 +240,9 @@ const Admin = () => {
   // Transactions
   const [transactions, setTransactions] = useState([]);
   const [txLoading, setTxLoading] = useState(true);
+
+  // Maintenance
+  const [maintenancing, setMaintenancing] = useState(false);
 
   // ── Guard: only admin ──
   useEffect(() => {
@@ -319,6 +330,22 @@ const Admin = () => {
       setTransactions(prev => prev.filter(t => t.id !== id));
     } catch (e) {
       alert('Lỗi: ' + e.message);
+    }
+  };
+
+  const handleSyncTDS = async () => {
+    if (!window.confirm('Cập nhật địa chỉ Google Maps cho tất cả sân TDS?')) return;
+    setMaintenancing(true);
+    try {
+      const tdsSessions = sessions.filter(s => s.courtName.includes('TDS'));
+      for (const s of tdsSessions) {
+        await updateSession(s.id, { locationUrl: "https://maps.app.goo.gl/WSk6dBzFfs4EkYf29" });
+      }
+      alert(`Đã cập nhật ${tdsSessions.length} buổi tập.`);
+    } catch (e) {
+      alert('Lỗi: ' + e.message);
+    } finally {
+      setMaintenancing(false);
     }
   };
 
@@ -431,6 +458,15 @@ const Admin = () => {
               <span className="material-symbols-outlined text-[18px]">add</span>
               Tạo mới
             </button>
+          </div>
+          <div className="mb-4 flex gap-2">
+             <button 
+               onClick={handleSyncTDS} 
+               disabled={maintenancing}
+               className="text-[10px] font-bold uppercase tracking-widest text-[#FF7A00] bg-[#FFF0E5] px-3 py-1.5 rounded-lg active:scale-95 transition disabled:opacity-50"
+             >
+               {maintenancing ? 'Đang cập nhật...' : 'Sync địa chỉ TDS'}
+             </button>
           </div>
           {sessionLoading ? (
             <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-10 w-10 border-4 border-[#FF7A00] border-t-transparent" /></div>
