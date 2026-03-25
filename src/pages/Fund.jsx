@@ -74,7 +74,7 @@ const MemberModal = ({ member, onClose, onSave }) => {
 };
 
 // ─── Modal: Transaction Detail ──────────────────────────────────────────────
-const TransactionDetailModal = ({ transaction, onClose, onDelete, onEdit }) => {
+const TransactionDetailModal = ({ transaction, onClose, onDelete, onEdit, isAdmin }) => {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-sm rounded-[2rem] p-7 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
@@ -129,12 +129,22 @@ const TransactionDetailModal = ({ transaction, onClose, onDelete, onEdit }) => {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <button onClick={() => { if(window.confirm('Xóa giao dịch này?')) { onDelete(transaction.id); onClose(); } }} className="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl">
-             <span className="material-symbols-outlined">delete</span>
-          </button>
-          <button onClick={() => onEdit(transaction.id)} className="w-12 h-12 flex items-center justify-center bg-[#FFF0E5] text-[#FF7A00] rounded-xl">
-             <span className="material-symbols-outlined">edit</span>
-          </button>
+          {isAdmin && (
+            <>
+              <button 
+                onClick={() => { if(window.confirm('Xóa giao dịch này?')) { onDelete(transaction.id); onClose(); } }} 
+                className="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl"
+              >
+                <span className="material-symbols-outlined">delete</span>
+              </button>
+              <button 
+                onClick={() => onEdit(transaction.id)} 
+                className="w-12 h-12 flex items-center justify-center bg-[#FFF0E5] text-[#FF7A00] rounded-xl"
+              >
+                <span className="material-symbols-outlined">edit</span>
+              </button>
+            </>
+          )}
           <button onClick={onClose} className="flex-1 py-3 bg-gradient-to-r from-[#FF7A00] to-[#C35A00] text-white rounded-xl font-bold text-sm shadow">Đóng</button>
         </div>
       </div>
@@ -554,6 +564,7 @@ const Fund = () => {
           onClose={() => setSelectedTx(null)}
           onDelete={handleDeleteTx}
           onEdit={(id) => navigate(`/fund/edit/${id}`)}
+          isAdmin={isAdmin}
         />
       )}
     </main>

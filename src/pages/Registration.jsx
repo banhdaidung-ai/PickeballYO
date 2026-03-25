@@ -54,7 +54,7 @@ const Registration = () => {
       setRegistrationSuccess(true);
       // Redirect after 2 seconds to show success message
       setTimeout(() => {
-        navigate('/');
+        navigate('/profile');
       }, 2000);
     } catch (err) {
       console.error("Registration handle error:", err);
