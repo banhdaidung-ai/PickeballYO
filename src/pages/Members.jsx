@@ -229,23 +229,29 @@ const Members = () => {
               </div>
 
               <h3 className="font-headline font-bold text-lg text-[#1C1B1F] mb-1 line-clamp-1 w-full">{user.fullName || "Ẩn danh"}</h3>
-              <p className="text-[#8C7A6B] text-[11px] font-medium mb-3">{user.phone || '09xx xxx xxx'}</p>
               
               <p className={`font-label text-[10px] font-black uppercase tracking-[0.2em] mb-4 ${user.leagueColor}`}>
                 {user.league}
               </p>
 
-              {user.hasPaidFund ? (
-                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#E8F5E9] text-[#2E7D32] rounded-full mb-6">
-                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                  <span className="font-label text-[9px] font-bold uppercase tracking-widest">Đã đóng quỹ</span>
+              {/* Phone and Call CTA */}
+              <div className="w-full space-y-3 mb-6">
+                <a 
+                  href={`tel:${user.phone || ''}`} 
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-[#F2F0ED] hover:bg-[#E6E0D8] text-[#1C1B1F] rounded-2xl transition-all active:scale-95 group/call"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-[#FF7A00] group-hover/call:rotate-12 transition-transform">call</span>
+                  <span className="font-headline font-extrabold text-sm tracking-tight">{user.phone || 'Chưa cập nhật'}</span>
+                </a>
+
+                {/* Subtle Fund Status */}
+                <div className="flex items-center justify-center gap-1.5 opacity-80">
+                  <div className={`w-1.5 h-1.5 rounded-full ${user.hasPaidFund ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <span className="text-[10px] font-bold font-label uppercase tracking-widest text-[#8C7A6B]">
+                    {user.hasPaidFund ? 'Đã đóng quỹ' : 'Chưa đóng quỹ'}
+                  </span>
                 </div>
-              ) : (
-                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#FFEBEE] text-[#C62828] rounded-full mb-6">
-                  <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>cancel</span>
-                  <span className="font-label text-[9px] font-bold uppercase tracking-widest">Chưa đóng quỹ</span>
-                </div>
-              )}
+              </div>
 
               <div className="w-full pt-4 border-t border-[#F2F0ED] flex items-center justify-between mt-auto">
                 <span className="text-[9px] font-label text-[#8C7A6B] uppercase tracking-wider font-bold">Số trận tham gia</span>

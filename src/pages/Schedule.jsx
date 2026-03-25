@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { subscribeToSchedule } from '../services/dataService';
 import { getUserBookings } from '../services/bookingService';
 import { useAuth } from '../contexts/AuthContext';
+import ParticipantModal from '../components/ParticipantModal';
 
 const WEEKDAY_LABELS = ['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'];
 
@@ -13,6 +14,7 @@ const Schedule = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('week');
+  const [showParticipants, setShowParticipants] = useState(null); // stores session object
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
@@ -245,8 +247,30 @@ const Schedule = () => {
                         <span className={`w-2 h-2 rounded-full animate-pulse ${isJoined ? 'bg-green-500' : 'bg-primary'}`}></span>
                         <span className={`font-label text-[10px] font-bold uppercase tracking-widest ${isJoined ? 'text-green-600' : 'text-primary'}`}>{realDateLabel}</span>
                       </div>
-                      <h4 className="font-headline font-bold text-xl text-on-surface">{session.courtName || 'Sân trống'}</h4>
-                      <p className="font-body text-sm text-on-surface-variant">{session.timeRange || ''} • {session.type || 'Sân Pickleball'}</p>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-headline font-bold text-xl text-on-surface">{session.courtName || 'Sân trống'}</h4>
+                        {session.locationUrl && (
+                          <a 
+                            href={session.locationUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center justify-center w-6 h-6 rounded-full bg-[#FFF0E5] text-[#FF7A00] hover:bg-[#FFE0CC] transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">location_on</span>
+                          </a>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-4 mt-1">
+                        <p className="font-body text-sm text-on-surface-variant line-clamp-1">{session.timeRange || ''} • {session.type || 'Sân Pickleball'}</p>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setShowParticipants(session); }}
+                          className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors text-secondary"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">group</span>
+                          <span className="text-[11px] font-bold font-label uppercase tracking-wider">{session.participants?.length || 0}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center justify-end">
@@ -272,6 +296,13 @@ const Schedule = () => {
           })
         )}
       </section>
+
+      {showParticipants && (
+        <ParticipantModal 
+          participants={showParticipants.participants}
+          onClose={() => setShowParticipants(null)}
+        />
+      )}
     </main>
   );
 };
