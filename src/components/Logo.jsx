@@ -29,7 +29,7 @@ const Logo = ({ iconClassName = "w-10 h-10", textColor = "text-[#FF7A00]", showT
       </div>
       {showText && !iconOnly && (
         <span className={`${textColor} font-headline font-black italic tracking-tighter ${fontSize} uppercase whitespace-nowrap`}>
-          Pickleball Club
+          YODY Pickleball Club
         </span>
       )}
     </div>
