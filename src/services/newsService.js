@@ -22,13 +22,20 @@ const newsCollection = collection(db, 'news');
 export const getAllNews = async (includeDrafts = false) => {
   let q;
   if (includeDrafts) {
-    q = query(newsCollection, orderBy('createdAt', 'desc'));
+    q = query(newsCollection);
   } else {
-    q = query(newsCollection, where('status', '==', 'published'), orderBy('createdAt', 'desc'));
+    q = query(newsCollection, where('status', '==', 'published'));
   }
   
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+  // Client-side sorting as a fallback for missing indices
+  return news.sort((a, b) => {
+    const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+    const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+    return dateB - dateA;
+  });
 };
 
 /**
@@ -79,13 +86,21 @@ export const deleteNews = async (id) => {
 export const subscribeToNews = (callback, includeDrafts = false) => {
   let q;
   if (includeDrafts) {
-    q = query(newsCollection, orderBy('createdAt', 'desc'));
+    q = query(newsCollection);
   } else {
-    q = query(newsCollection, where('status', '==', 'published'), orderBy('createdAt', 'desc'));
+    q = query(newsCollection, where('status', '==', 'published'));
   }
 
   return onSnapshot(q, (snapshot) => {
     const news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    callback(news);
+    
+    // Client-side sorting as a fallback for missing indices
+    const sortedNews = news.sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+      return dateB - dateA;
+    });
+    
+    callback(sortedNews);
   });
 };
