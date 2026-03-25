@@ -19,7 +19,11 @@ export const AuthProvider = ({ children }) => {
           await ensureUserDocument(result.user);
         }
       } catch (error) {
-        console.error("Error handling redirect result:", error);
+        // Specifically catch 'missing initial state' or other redirect errors
+        console.error("Error handling redirect result:", error.code, error.message);
+        if (error.code === 'auth/auth-domain-config-required' || error.code === 'auth/operation-not-allowed') {
+          // These are configuration issues
+        }
       }
     };
     handleRedirect();

@@ -77,12 +77,14 @@ const isMobile = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
 
+export const isInAppBrowser = () => {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Zalo") > -1) || (ua.indexOf("Instagram") > -1);
+};
+
 export const signInWithGoogle = async () => {
   try {
-    if (isMobile()) {
-      await signInWithRedirect(auth, googleProvider);
-      return; // Page will redirect
-    }
+    // Revert to PopUp as primary, but Login UI will handle blocked cases
     const result = await signInWithPopup(auth, googleProvider);
     await ensureUserDocument(result.user);
     return result.user;
@@ -92,17 +94,31 @@ export const signInWithGoogle = async () => {
   }
 };
 
+export const signInWithGoogleRedirect = async () => {
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (error) {
+    console.error("Error signing in with Google Redirect:", error);
+    throw error;
+  }
+};
+
 export const signInWithFacebook = async () => {
   try {
-    if (isMobile()) {
-      await signInWithRedirect(auth, facebookProvider);
-      return; // Page will redirect
-    }
     const result = await signInWithPopup(auth, facebookProvider);
     await ensureUserDocument(result.user);
     return result.user;
   } catch (error) {
     console.error("Error signing in with Facebook:", error);
+    throw error;
+  }
+};
+
+export const signInWithFacebookRedirect = async () => {
+  try {
+    await signInWithRedirect(auth, facebookProvider);
+  } catch (error) {
+    console.error("Error signing in with Facebook Redirect:", error);
     throw error;
   }
 };

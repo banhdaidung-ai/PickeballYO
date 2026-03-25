@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signIn, signInWithGoogle, signInWithFacebook } from '../services/authService';
+import { signIn, signInWithGoogle, signInWithFacebook, isInAppBrowser, signInWithGoogleRedirect, signInWithFacebookRedirect } from '../services/authService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,6 +9,8 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [popupBlocked, setPopupBlocked] = useState(false);
+  const inAppBrowser = isInAppBrowser();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,29 +31,47 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setError('');
+    setPopupBlocked(false);
     try {
       await signInWithGoogle();
       navigate('/profile');
     } catch (err) {
       console.error("Google Login Error:", err);
-      if (err.code === 'auth/operation-not-allowed') {
-        setError('Bạn chưa bật tính năng Đăng nhập Google trong Firebase Console (Tab Sign-in method).');
+      if (err.code === 'auth/popup-blocked') {
+        setPopupBlocked(true);
+        setError('Trình duyệt đã chặn cửa sổ đăng nhập.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError('Bạn chưa bật tính năng Đăng nhập Google trong Firebase Console.');
       } else if (err.code === 'auth/popup-closed-by-user') {
-        // Do nothing if user just closed the popup
+        // Just ignore
       } else {
         setError(`Lỗi: ${err.message}`);
       }
     }
   };
 
+  const handleGoogleRedirect = async () => {
+    try {
+      await signInWithGoogleRedirect();
+    } catch (err) {
+      setError(`Lỗi: ${err.message}`);
+    }
+  };
+
   const handleFacebookLogin = async () => {
+    setError('');
+    setPopupBlocked(false);
     try {
       await signInWithFacebook();
       navigate('/profile');
     } catch (err) {
       console.error("Facebook Login Error:", err);
-      if (err.code === 'auth/operation-not-allowed') {
-        setError('Bạn chưa bật Facebook trong Firebase Console, hoặc chưa cấu hình App ID/Secret của Facebook Developer.');
+      if (err.code === 'auth/popup-blocked') {
+        setPopupBlocked(true);
+        setError('Trình duyệt đã chặn cửa sổ đăng nhập.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError('Bạn chưa bật Facebook trong Firebase Console.');
       } else if (err.code === 'auth/popup-closed-by-user') {
         // Do nothing
       } else {
@@ -79,7 +99,32 @@ const Login = () => {
           <p className="text-[#8E7C7A] text-sm">Vui lòng nhập thông tin để truy cập tài khoản của bạn</p>
         </div>
 
-        {error && <p className="text-red-500 text-sm font-bold text-center mb-4">{error}</p>}
+        {/* In-App Browser Warning */}
+        {inAppBrowser && (
+          <div className="mb-6 p-4 bg-orange-100 border-l-4 border-orange-500 rounded-lg animate-pulse">
+            <div className="flex gap-2">
+              <span className="material-symbols-outlined text-orange-600">warning</span>
+              <p className="text-xs font-bold text-orange-800 leading-tight">
+                Bạn đang sử dụng trình duyệt nhúng (Zalo/FB). 
+                Vui lòng nhấn <span className="text-orange-900 underline">"Mở bằng trình duyệt Safari/Chrome"</span> để có thể đăng nhập Google/Facebook.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+            <p className="text-xs font-bold text-red-600">{error}</p>
+            {popupBlocked && (
+              <button 
+                onClick={handleGoogleRedirect}
+                className="mt-2 text-[10px] font-black uppercase tracking-widest text-red-800 underline hover:text-red-950"
+              >
+                Hoặc nhấn vào đây để thử phương pháp chuyển hướng
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-5">
