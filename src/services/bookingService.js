@@ -1,4 +1,4 @@
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, query, getDocs, getDoc } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, collection, query, getDocs, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 const SCHEDULE_COLLECTION = "schedule";
@@ -65,22 +65,25 @@ export const cancelBooking = async (sessionId, userId) => {
     const data = sessionDoc.data();
     const participants = data.participants || [];
     
-    // Tìm chính xác đối tượng cần xóa để dùng arrayRemove (an toàn hơn)
-    const participantToRemove = participants.find(p => String(p.userId) === String(userId));
+    console.log(`[cancelBooking] Danh sách hiện tại:`, participants);
+
+    // Lọc thủ công thay vì dùng arrayRemove (arrayRemove yêu cầu deep equality chính xác)
+    const updatedParticipants = participants.filter(
+      p => String(p.userId) !== String(userId)
+    );
     
-    if (!participantToRemove) {
+    if (updatedParticipants.length === participants.length) {
       console.warn(`[cancelBooking] Không tìm thấy User ${userId} trong danh sách:`, participants);
-      // Nếu không tìm thấy bằng ID, thử tìm "fuzzy" hoặc thông báo lỗi cụ thể
       throw new Error("Không tìm thấy bạn trong danh sách tham gia của buổi tập này.");
     }
 
-    console.log("[cancelBooking] Đã tìm thấy đối tượng tham gia, tiến hành xóa...");
+    console.log("[cancelBooking] Tiến hành cập nhật danh sách mới...");
     
     await updateDoc(sessionRef, {
-      participants: arrayRemove(participantToRemove)
+      participants: updatedParticipants
     });
     
-    console.log("[cancelBooking] Hoàn tất xóa phần tử khỏi Firestore.");
+    console.log("[cancelBooking] Hoàn tất hủy tham gia thành công.");
   } catch (error) {
     console.error("[cancelBooking] Lỗi hệ thống:", error);
     throw error;
