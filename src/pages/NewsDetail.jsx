@@ -85,10 +85,9 @@ const NewsDetail = () => {
       {/* Content Section */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 pt-12">
         <div 
-          className="prose prose-orange max-w-none text-[#2A3B4C] font-medium text-base sm:text-lg leading-relaxed space-y-6"
-          dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />') }}
+          className="rich-text-content max-w-none text-[#2A3B4C] font-medium text-base sm:text-lg leading-relaxed space-y-4"
+          dangerouslySetInnerHTML={{ __html: article.content }}
         >
-          {/* Using dangerouslySetInnerHTML to allow simple paragraph breaks. For a full CMS, we'd use a real markdown renderer. */}
         </div>
         
         {/* Author Footer (Mock) */}

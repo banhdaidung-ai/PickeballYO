@@ -240,34 +240,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        <section className="pb-8">
-          <div className="flex justify-between items-center mb-4 px-1">
-            <div className="font-label text-xs font-semibold text-secondary uppercase tracking-wider">Tin tức &amp; Sự kiện</div>
-            <button className="text-primary text-xs font-label font-bold">Tất cả</button>
-          </div>
-          <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6">
-            {/* ... news items ... */}
-            <div className="flex-none w-72 h-44 rounded-3xl relative overflow-hidden group">
-              <img alt="Tournament" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlZjZ89DDaUIO_29x-16pljPJLQXNwhBSsOnkjt0H634GZPUtOZqVAUhsT1VuluOCTbxxicJMPxAIHDUVh-c8xIUdOP2kKfO-ywGkO-6W7PcbiCih03-z061TwVsX223YP-hP14qBoXvUiv07Z4Hs1ZPKFOUdJAy9BueO3yExVH9ROgkRnIEP909pKyhlwSToiPPv9Clqejg9GQvGnKHmHqESXBEvC2oUd7qJl3yBkeI9cy5sKa0Qp8zQ3O6L1k3XjLhdNc-CeXl0" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="bg-primary text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase mb-2 inline-block">Sắp diễn ra</span>
-                <h4 className="text-white font-headline font-bold leading-tight">Giải YODY Open 2024</h4>
-              </div>
-            </div>
-            <div 
-              onClick={() => navigate('/registration')}
-              className="flex-none w-72 h-44 rounded-3xl relative overflow-hidden group cursor-pointer"
-            >
-              <img alt="Training" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQHqDxb_jjvO21wBYVTK4OpBJAA7BI8sL6Ru9CXYlkpIQegeHvirP6IJiNEAoO2w4s2MjoWEwQi3OCzuu9vLQaQiNo-T-g7fyOiQLGS3msFe3uPvRjTAdqGpr2GEC3knOoGgIBquf3DZk8uYb9E6xWoxqp7qlMbiNLXkJKAkiC-iX6f2q5NnogpA73Hph13GSXBOINT-jOQaezxcFurIPdLQtGhP-gggbJmcgCS-AAA6ZFy-ZrhquZbqTW3GBrtNBZ3MhdZVk3pqk" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-4 left-4 right-4">
-                <span className="bg-secondary text-white text-[8px] font-bold px-2 py-0.5 rounded-full uppercase mb-2 inline-block">Ưu đãi</span>
-                <h4 className="text-white font-headline font-bold leading-tight">Khóa học Pro-Skills</h4>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Latest News Section */}
         <section className="pb-12 border-t border-slate-100 pt-10">

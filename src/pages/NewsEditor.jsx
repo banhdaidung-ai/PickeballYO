@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { addNews, getNewsById, updateNews } from '../services/newsService';
 import { useAuth } from '../contexts/AuthContext';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 const NewsEditor = () => {
   const { id } = useParams();
@@ -54,6 +54,10 @@ const NewsEditor = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleContentChange = (content) => {
+    setFormData(prev => ({ ...prev, content }));
   };
 
   const handleSubmit = async (e) => {
@@ -188,15 +192,25 @@ const NewsEditor = () => {
 
           <div>
             <label className="block text-[11px] font-bold font-label text-[#8C7A6B] uppercase tracking-widest mb-3">Nội dung chi tiết</label>
-            <textarea 
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows="12"
-              placeholder="Kể câu chuyện về trận đấu, sự kiện hoặc thông báo quan trọng..." 
-              className="w-full px-5 py-4 bg-[#F2F0ED] rounded-2xl font-medium text-base text-[#1C1B1F] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 transition-all border border-transparent"
-              required
-            />
+            <div className="quill-editor-container bg-[#F2F0ED] rounded-2xl overflow-hidden border border-transparent focus-within:ring-2 focus-within:ring-[#FF7A00]/30 transition-all">
+              <ReactQuill 
+                theme="snow"
+                value={formData.content}
+                onChange={handleContentChange}
+                placeholder="Kể câu chuyện về trận đấu, sự kiện hoặc thông báo quan trọng..."
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['link', 'image'],
+                    ['clean']
+                  ],
+                }}
+                className="bg-white min-h-[300px]"
+              />
+            </div>
+            <p className="mt-2 text-[10px] text-[#8C7A6B] font-medium italic">* Mẹo: Bạn có thể dán hình ảnh trực tiếp vào nội dung hoặc chèn link hình ảnh.</p>
           </div>
 
           <div className="flex items-center gap-3 pt-4">

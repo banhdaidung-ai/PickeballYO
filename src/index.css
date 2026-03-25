@@ -57,3 +57,32 @@ body {
 .animate-progress {
   animation: progress 2s linear forwards;
 }
+
+/* Rich Text Content Styling */
+.rich-text-content h1 { @apply text-3xl font-black font-headline mb-6 mt-8 text-[#1C1B1F] tracking-tighter; }
+.rich-text-content h2 { @apply text-2xl font-black font-headline mb-4 mt-6 text-[#1C1B1F] tracking-tighter; }
+.rich-text-content h3 { @apply text-xl font-bold font-headline mb-3 mt-4 text-[#1C1B1F]; }
+.rich-text-content p { @apply mb-4 leading-relaxed; }
+.rich-text-content ul { @apply list-disc pl-6 mb-6 space-y-2; }
+.rich-text-content ol { @apply list-decimal pl-6 mb-6 space-y-2; }
+.rich-text-content li { @apply pl-1; }
+.rich-text-content b, .rich-text-content strong { @apply font-black text-[#1C1B1F]; }
+.rich-text-content a { @apply text-[#FF7A00] underline underline-offset-4 decoration-2 font-bold hover:text-[#C35A00] transition-colors; }
+.rich-text-content img { @apply rounded-3xl my-8 shadow-lg max-w-full h-auto mx-auto; }
+.rich-text-content blockquote { @apply border-l-4 border-[#FF7A00] pl-6 py-2 italic bg-[#FFF0E5] rounded-r-2xl my-6 text-[#8C7A6B]; }
+
+.quill-editor-container .ql-toolbar {
+  @apply border-none bg-slate-50 p-4 border-b border-[#F2F0ED] !important;
+}
+.quill-editor-container .ql-container {
+  @apply border-none font-body text-base !important;
+}
+.quill-editor-container {
+  @apply border border-[#F2F0ED] rounded-2xl overflow-hidden;
+}
+.quill-editor-container .ql-editor {
+  @apply p-8 min-h-[300px] text-[#1C1B1F] !important;
+}
+.quill-editor-container .ql-editor.ql-blank::before {
+  @apply left-8 text-[#8C7A6B] italic font-medium !important;
+}
