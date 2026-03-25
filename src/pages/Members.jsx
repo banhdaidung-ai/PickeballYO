@@ -103,9 +103,23 @@ const Members = () => {
             />
           </div>
           
-          <button onClick={() => window.location.hash = '#/leaderboard'} className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-[#FF7A00] to-[#E55A00] rounded-2xl shadow-sm shadow-[#FF7A00]/20 text-white active:scale-[0.98] transition-all">
-            <span className="material-symbols-outlined text-[18px]">leaderboard</span>
-            <span className="font-label text-sm font-bold uppercase tracking-widest">Xếp hạng chăm chỉ</span>
+          <button onClick={() => window.location.hash = '#/leaderboard'} className="relative overflow-hidden flex items-center justify-between w-full p-4 bg-gradient-to-r from-[#FF7A00] via-[#E55A00] to-[#E55A00] rounded-[20px] shadow-lg shadow-[#FF7A00]/30 border border-[#FF7A00]/20 active:scale-[0.98] transition-all group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-16 translate-x-12 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div className="flex items-center gap-3 relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm border border-white/30">
+                <span className="material-symbols-outlined text-white text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-headline text-lg font-black text-white tracking-wide leading-tight">Xếp hạng chăm chỉ</h3>
+                <p className="font-label text-[10px] text-white/80 uppercase tracking-widest font-bold mt-0.5">Vinh danh & Bảng xếp hạng</p>
+              </div>
+            </div>
+            
+            <div className="relative z-10 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:translate-x-1 transition-transform">
+              <span className="material-symbols-outlined text-white text-sm">arrow_forward_ios</span>
+            </div>
           </button>
         </div>
 
