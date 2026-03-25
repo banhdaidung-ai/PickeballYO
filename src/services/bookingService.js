@@ -50,36 +50,39 @@ export const bookSession = async (sessionId, userId, userName) => {
 
 export const cancelBooking = async (sessionId, userId) => {
   if (!userId) {
-    throw new Error("Không tìm thấy thông tin người dùng (Missing User ID)");
+    throw new Error("Không tìm thấy mã người dùng (UID). Vui lòng thử đăng nhập lại.");
   }
+  
   try {
-    console.log(`[cancelBooking] Attempting to remove user ${userId} from session ${sessionId}`);
+    console.log(`[cancelBooking] Khởi động hủy cho User: ${userId}, Session: ${sessionId}`);
     const sessionRef = doc(db, SCHEDULE_COLLECTION, sessionId);
     const sessionDoc = await getDoc(sessionRef);
     
-    if (sessionDoc.exists()) {
-      const data = sessionDoc.data();
-      const participants = data.participants || [];
-      const originalCount = participants.length;
-      
-      const updatedParticipants = participants.filter(p => p.userId !== userId);
-      
-      if (updatedParticipants.length === originalCount) {
-        console.warn(`[cancelBooking] User ${userId} was not found in the participants list.`);
-        // Even if not found, we should ensure the state is consistent
-      } else {
-        console.log(`[cancelBooking] Found and removed ${originalCount - updatedParticipants.length} entries for user ${userId}`);
-      }
-      
-      await updateDoc(sessionRef, {
-        participants: updatedParticipants
-      });
-      console.log("[cancelBooking] Successfully updated Firestore document.");
-    } else {
-      throw new Error("Buổi tập không tồn tại.");
+    if (!sessionDoc.exists()) {
+      throw new Error("Dữ liệu buổi tập không tồn tại trên hệ thống.");
     }
+
+    const data = sessionDoc.data();
+    const participants = data.participants || [];
+    
+    // Tìm chính xác đối tượng cần xóa để dùng arrayRemove (an toàn hơn)
+    const participantToRemove = participants.find(p => String(p.userId) === String(userId));
+    
+    if (!participantToRemove) {
+      console.warn(`[cancelBooking] Không tìm thấy User ${userId} trong danh sách:`, participants);
+      // Nếu không tìm thấy bằng ID, thử tìm "fuzzy" hoặc thông báo lỗi cụ thể
+      throw new Error("Không tìm thấy bạn trong danh sách tham gia của buổi tập này.");
+    }
+
+    console.log("[cancelBooking] Đã tìm thấy đối tượng tham gia, tiến hành xóa...");
+    
+    await updateDoc(sessionRef, {
+      participants: arrayRemove(participantToRemove)
+    });
+    
+    console.log("[cancelBooking] Hoàn tất xóa phần tử khỏi Firestore.");
   } catch (error) {
-    console.error("[cancelBooking] Error:", error);
+    console.error("[cancelBooking] Lỗi hệ thống:", error);
     throw error;
   }
 };

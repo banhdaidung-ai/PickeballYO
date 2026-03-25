@@ -43,6 +43,7 @@ const SessionDetails = () => {
 
   const handleCancel = async () => {
     if (!user?.uid) {
+      console.error("[SessionDetails] No user.uid found during cancel");
       setModalError("Vui lòng đăng nhập lại để thực hiện.");
       return;
     }
@@ -50,13 +51,17 @@ const SessionDetails = () => {
     setModalError('');
     setBooking(true);
     try {
-      console.log(`[handleCancel] User ${user.uid} cancelling session ${id}`);
+      console.log(`[SessionDetails] Current State - User: ${user.uid}, SessionID: ${id}`);
+      console.log(`[SessionDetails] Participants in state:`, session.participants);
+      
       await cancelBooking(id, user.uid);
+      
+      console.log("[SessionDetails] Cancellation success!");
       setShowConfirm(false);
       setCancelSuccess(true);
       setTimeout(() => setCancelSuccess(false), 3000);
     } catch (error) {
-      console.error("[handleCancel] Failed:", error);
+      console.error("[SessionDetails] Cancellation failed with error:", error);
       setModalError(error.message || "Đã có lỗi xảy ra. Thử lại.");
     } finally {
       setBooking(false);
