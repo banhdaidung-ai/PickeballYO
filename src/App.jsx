@@ -19,6 +19,7 @@ import AdminNews from './pages/AdminNews';
 import NewsEditor from './pages/NewsEditor';
 import NewsList from './pages/NewsList';
 import NewsDetail from './pages/NewsDetail';
+import Guide from './pages/Guide';
 
 function App() {
   const { user, loading } = useAuth();
@@ -41,6 +42,7 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="news" element={<NewsList />} />
           <Route path="admin/news" element={<AdminNews />} />
+          <Route path="guide" element={<Guide />} />
         </Route>
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/admin/news/new" element={<NewsEditor />} />
