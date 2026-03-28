@@ -219,6 +219,44 @@ const SessionModal = ({ session, onClose, onSave }) => {
   );
 };
 
+// ─── Confirm Modal ──────────────────────────────────────────────────────────
+const ConfirmModal = ({ isOpen, title, message, onConfirm, onClose, loading }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl scale-up-center space-y-6 text-center">
+        <div className="w-20 h-20 bg-red-50 rounded-[2rem] mx-auto flex items-center justify-center text-red-500">
+          <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+        </div>
+        
+        <div className="space-y-2">
+          <h3 className="text-2xl font-headline font-black text-[#1C1B1F] tracking-tight">{title}</h3>
+          <p className="text-[#8C7A6B] text-sm font-medium leading-relaxed">{message}</p>
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <button 
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1 py-4 bg-[#F2F0ED] text-[#8C7A6B] rounded-2xl font-bold text-sm hover:bg-[#E6E0D8] transition-colors disabled:opacity-50"
+          >
+            Hủy
+          </button>
+          <button 
+            onClick={onConfirm}
+            disabled={loading}
+            className="flex-1 py-4 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-red-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : 'Xác nhận xóa'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 const Admin = () => {
   const { userData } = useAuth();
@@ -229,7 +267,6 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [userLoading, setUserLoading] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
-  const [deletingUserId, setDeletingUserId] = useState(null);
 
   // Sessions
   const [sessions, setSessions] = useState([]);
@@ -240,6 +277,16 @@ const Admin = () => {
   // Transactions
   const [transactions, setTransactions] = useState([]);
   const [txLoading, setTxLoading] = useState(true);
+
+  // Confirm Modal State
+  const [confirmState, setConfirmState] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: null,
+    id: null,
+    loading: false
+  });
 
   // Maintenance
   const [maintenancing, setMaintenancing] = useState(false);
@@ -291,16 +338,36 @@ const Admin = () => {
     setUsers(prev => prev.map(u => u.uid === uid ? { ...u, ...data } : u));
   };
 
-  const handleDeleteUser = async (uid) => {
-    if (!window.confirm('Xác nhận xóa thành viên này khỏi hệ thống?')) return;
-    setDeletingUserId(uid);
+  const handleDeleteUser = (uid) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Xóa thành viên',
+      message: 'Bạn có chắc chắn muốn xóa thành viên này khỏi hệ thống? Hành động này không thể hoàn tác.',
+      type: 'user',
+      id: uid,
+      loading: false
+    });
+  };
+
+  const executeDelete = async () => {
+    const { type, id } = confirmState;
+    setConfirmState(prev => ({ ...prev, loading: true }));
+    
     try {
-      await deleteUserDoc(uid);
-      setUsers(prev => prev.filter(u => u.uid !== uid));
+      if (type === 'user') {
+        await deleteUserDoc(id);
+        setUsers(prev => prev.filter(u => u.uid !== id));
+      } else if (type === 'session') {
+        await deleteSession(id);
+        setSessions(prev => prev.filter(s => s.id !== id));
+      } else if (type === 'tx') {
+        await deleteTransaction(id);
+        setTransactions(prev => prev.filter(t => t.id !== id));
+      }
+      setConfirmState({ isOpen: false, title: '', message: '', type: null, id: null, loading: false });
     } catch (e) {
       alert('Lỗi: ' + e.message);
-    } finally {
-      setDeletingUserId(null);
+      setConfirmState(prev => ({ ...prev, loading: false }));
     }
   };
 
@@ -316,21 +383,27 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteSession = async (id) => {
-    if (!window.confirm('Xóa buổi tập này?')) return;
-    await deleteSession(id);
-    setSessions(prev => prev.filter(s => s.id !== id));
+  const handleDeleteSession = (id) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Xóa buổi tập',
+      message: 'Xác nhận xóa buổi tập này? Thông tin đăng ký của thành viên sẽ bị mất.',
+      type: 'session',
+      id: id,
+      loading: false
+    });
   };
 
   // ── Transaction delete ──
-  const handleDeleteTx = async (id) => {
-    if (!window.confirm('Xóa giao dịch này?')) return;
-    try {
-      await deleteTransaction(id);
-      setTransactions(prev => prev.filter(t => t.id !== id));
-    } catch (e) {
-      alert('Lỗi: ' + e.message);
-    }
+  const handleDeleteTx = (id) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Xóa giao dịch',
+      message: 'Bạn có chắc chắn muốn xóa giao dịch này khỏi lịch sử chi tiêu?',
+      type: 'tx',
+      id: id,
+      loading: false
+    });
   };
 
   const handleSyncTDS = async () => {
@@ -434,7 +507,7 @@ const Admin = () => {
                     </button>
                     <button
                       onClick={() => handleDeleteUser(u.uid)}
-                      disabled={deletingUserId === u.uid || u.email === 'banhdaidung@gmail.com'}
+                      disabled={(confirmState.loading && confirmState.id === u.uid) || u.email === 'banhdaidung@gmail.com'}
                       className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-500 active:scale-90 transition disabled:opacity-30"
                     >
                       <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -612,6 +685,14 @@ const Admin = () => {
           onSave={handleSaveSession}
         />
       )}
+      <ConfirmModal 
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        loading={confirmState.loading}
+        onConfirm={executeDelete}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+      />
     </main>
   );
 };
