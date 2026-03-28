@@ -70,7 +70,7 @@ const Dashboard = () => {
         const ranked = usersData.map(u => ({
           ...u,
           matchCount: matchCounts[u.uid] || 0
-        })).sort((a, b) => b.matchCount - a.matchCount).slice(0, 3);
+        })).sort((a, b) => b.matchCount - a.matchCount);
 
         setTopUsers(ranked);
       } catch (e) {
@@ -216,30 +216,46 @@ const Dashboard = () => {
             </button>
           </div>
           
-          <div className="bg-white rounded-[2rem] p-5 shadow-sm border border-[#F2F0ED]">
+          <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-[#F2F0ED]">
             {leaderboardLoading ? (
-              <div className="flex justify-center py-4"><div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" /></div>
+              <div className="flex justify-center py-6"><div className="animate-spin h-6 w-6 border-3 border-primary border-t-transparent rounded-full" /></div>
             ) : topUsers.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-1">
                 {topUsers.map((u, i) => (
-                  <div key={u.uid} className="flex flex-col items-center text-center p-2 rounded-2xl hover:bg-[#FFF8F3] transition-colors relative">
-                    <div className="relative mb-2">
+                  <div 
+                    key={u.uid} 
+                    className="flex items-center gap-3 p-3 rounded-[1.5rem] hover:bg-[#FFF8F3] transition-all group"
+                  >
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-sm shrink-0 ${
+                      i === 0 ? 'bg-yellow-400 text-white' : 
+                      i === 1 ? 'bg-slate-300 text-slate-700' : 
+                      i === 2 ? 'bg-orange-200 text-orange-800' : 'bg-[#F2F0ED] text-[#8C7A6B]'
+                    }`}>
+                      {i + 1}
+                    </div>
+                    
+                    <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-white shadow-sm shrink-0">
                       <img 
                         src={u.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.uid}`} 
                         alt={u.fullName} 
-                        className={`w-12 h-12 rounded-full border-2 object-cover ${i === 0 ? 'border-yellow-400' : i === 1 ? 'border-slate-300' : 'border-orange-200'}`}
+                        className="w-full h-full object-cover"
                       />
-                      <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-sm ${i === 0 ? 'bg-yellow-500' : i === 1 ? 'bg-slate-400' : 'bg-orange-600'}`}>
-                        {i + 1}
-                      </div>
                     </div>
-                    <span className="text-[10px] font-headline font-black text-[#4A2C2A] truncate w-full">{u.fullName?.split(' ').slice(-1)[0] || 'User'}</span>
-                    <span className="text-[9px] font-bold text-primary">{u.matchCount} buổi</span>
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className="font-headline font-black text-[#1C1B1F] text-sm truncate uppercase tracking-tight">{u.fullName || 'Thành viên'}</p>
+                      <p className="text-[10px] font-bold text-[#8C7A6B] uppercase tracking-widest">{u.phone || u.email?.split('@')[0] || 'Member'}</p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-headline font-black text-primary text-base leading-none">{u.matchCount}</p>
+                      <p className="text-[9px] font-bold text-[#8C7A6B] uppercase tracking-widest">Buổi tập</p>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-xs text-[#8E7C7A] py-2">Chưa có dữ liệu xếp hạng.</p>
+              <p className="text-center text-xs text-[#8C7A6B] py-4">Chưa có dữ liệu xếp hạng.</p>
             )}
           </div>
         </section>
